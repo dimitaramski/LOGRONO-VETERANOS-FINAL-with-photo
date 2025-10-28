@@ -1,34 +1,123 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0f0f10 0%, #1a1a1b 100%);
+  color: #e5e5e5;
+  min-height: 100vh;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-.App-link {
-    color: #61dafb;
+.glass-card {
+  background: rgba(26, 26, 27, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(244, 197, 66, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s ease;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.glass-card:hover {
+  border-color: rgba(244, 197, 66, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(244, 197, 66, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #f4c542 0%, #ffd700 100%);
+  color: #0f0f10;
+  font-weight: 600;
+  padding: 12px 32px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(244, 197, 66, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #f4c542;
+  font-weight: 600;
+  padding: 12px 32px;
+  border-radius: 50px;
+  border: 2px solid #f4c542;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-secondary:hover {
+  background: #f4c542;
+  color: #0f0f10;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #f4c542 0%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar {
+  background: rgba(15, 15, 16, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(244, 197, 66, 0.1);
+}
+
+.input-field {
+  background: rgba(26, 26, 27, 0.8);
+  border: 1px solid rgba(244, 197, 66, 0.2);
+  color: #e5e5e5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #f4c542;
+  box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.1);
+}
+
+.table-header {
+  background: rgba(244, 197, 66, 0.1);
+  color: #f4c542;
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.table-row {
+  border-bottom: 1px solid rgba(244, 197, 66, 0.1);
+  transition: background 0.2s ease;
+}
+
+.table-row:hover {
+  background: rgba(244, 197, 66, 0.05);
+}
+
+.goal-animation {
+  animation: goalPulse 0.6s ease;
+}
+
+@keyframes goalPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }

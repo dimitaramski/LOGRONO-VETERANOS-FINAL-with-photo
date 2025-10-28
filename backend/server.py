@@ -1,15 +1,17 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
-
+from datetime import datetime, timezone, timedelta
+from passlib.context import CryptContext
+from jose import JWTError, jwt
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,46 +27,557 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Security
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key-change-in-production")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+# ============= Models =============
+
+class User(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    username: str
+    role: str  # admin or team
+    team_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    role: str
+    team_id: Optional[str] = None
 
-# Add your routes to the router instead of directly to app
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user: User
+
+class Team(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    division: int  # 1 or 2
+    logo_url: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class TeamCreate(BaseModel):
+    name: str
+    division: int
+    logo_url: Optional[str] = None
+
+class Player(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    team_id: str
+    jersey_number: Optional[int] = None
+    goals_scored: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PlayerCreate(BaseModel):
+    name: str
+    team_id: str
+    jersey_number: Optional[int] = None
+
+class GoalScorer(BaseModel):
+    player_id: str
+    player_name: str
+    minute: Optional[int] = None
+
+class Fixture(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    division: int
+    week_number: int
+    home_team_id: str
+    away_team_id: str
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    match_date: datetime
+    status: str = "scheduled"  # scheduled or completed
+    home_scorers: List[GoalScorer] = []
+    away_scorers: List[GoalScorer] = []
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class FixtureCreate(BaseModel):
+    division: int
+    week_number: int
+    home_team_id: str
+    away_team_id: str
+    match_date: str
+
+class FixtureUpdate(BaseModel):
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    status: Optional[str] = None
+
+class AddGoalScorer(BaseModel):
+    player_id: str
+    team_side: str  # home or away
+    minute: Optional[int] = None
+
+class StandingsRow(BaseModel):
+    position: int
+    team_id: str
+    team_name: str
+    games_played: int
+    games_won: int
+    games_draw: int
+    games_lost: int
+    goals_for: int
+    goals_against: int
+    goal_difference: int
+    points: int
+
+class TopScorer(BaseModel):
+    player_id: str
+    player_name: str
+    team_id: str
+    team_name: str
+    goals: int
+
+class Subscription(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    payment_status: str = "pending"  # pending or completed
+    amount: float = 5.0
+    season: str
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SubscriptionCreate(BaseModel):
+    email: EmailStr
+    season: str
+
+# ============= Helper Functions =============
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user_doc = await db.users.find_one({"id": user_id}, {"_id": 0})
+        if user_doc is None:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        if isinstance(user_doc['created_at'], str):
+            user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
+        
+        return User(**user_doc)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+
+async def get_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return current_user
+
+# ============= Routes =============
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Liga Veteranos Logroño API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
+# Auth Routes
+@api_router.post("/auth/register", response_model=User)
+async def register(user_data: UserCreate, admin: User = Depends(get_admin_user)):
+    # Check if username exists
+    existing = await db.users.find_one({"username": user_data.username})
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already exists")
     
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
+    hashed_password = get_password_hash(user_data.password)
+    user = User(
+        username=user_data.username,
+        role=user_data.role,
+        team_id=user_data.team_id
+    )
     
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+    doc = user.model_dump()
+    doc['hashed_password'] = hashed_password
+    doc['created_at'] = doc['created_at'].isoformat()
+    
+    await db.users.insert_one(doc)
+    return user
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+@api_router.post("/auth/login", response_model=Token)
+async def login(user_data: UserLogin):
+    user_doc = await db.users.find_one({"username": user_data.username}, {"_id": 0})
+    if not user_doc or not verify_password(user_data.password, user_doc['hashed_password']):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    if isinstance(user_doc['created_at'], str):
+        user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
     
-    return status_checks
+    user_doc.pop('hashed_password')
+    user = User(**user_doc)
+    
+    access_token = create_access_token(data={"sub": user.id})
+    return Token(access_token=access_token, token_type="bearer", user=user)
+
+@api_router.get("/auth/me", response_model=User)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+# Team Routes
+@api_router.get("/teams", response_model=List[Team])
+async def get_teams():
+    teams = await db.teams.find({}, {"_id": 0}).to_list(1000)
+    for team in teams:
+        if isinstance(team['created_at'], str):
+            team['created_at'] = datetime.fromisoformat(team['created_at'])
+    return teams
+
+@api_router.get("/teams/{team_id}", response_model=Team)
+async def get_team(team_id: str):
+    team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if isinstance(team['created_at'], str):
+        team['created_at'] = datetime.fromisoformat(team['created_at'])
+    return Team(**team)
+
+@api_router.post("/teams", response_model=Team)
+async def create_team(team_data: TeamCreate, admin: User = Depends(get_admin_user)):
+    team = Team(**team_data.model_dump())
+    doc = team.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.teams.insert_one(doc)
+    return team
+
+@api_router.put("/teams/{team_id}", response_model=Team)
+async def update_team(team_id: str, team_data: TeamCreate, admin: User = Depends(get_admin_user)):
+    result = await db.teams.update_one(
+        {"id": team_id},
+        {"$set": team_data.model_dump()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+    if isinstance(team['created_at'], str):
+        team['created_at'] = datetime.fromisoformat(team['created_at'])
+    return Team(**team)
+
+@api_router.delete("/teams/{team_id}")
+async def delete_team(team_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.teams.delete_one({"id": team_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Team not found")
+    return {"message": "Team deleted successfully"}
+
+# Player Routes
+@api_router.get("/players", response_model=List[Player])
+async def get_players():
+    players = await db.players.find({}, {"_id": 0}).to_list(1000)
+    for player in players:
+        if isinstance(player['created_at'], str):
+            player['created_at'] = datetime.fromisoformat(player['created_at'])
+    return players
+
+@api_router.get("/players/team/{team_id}", response_model=List[Player])
+async def get_team_players(team_id: str):
+    players = await db.players.find({"team_id": team_id}, {"_id": 0}).to_list(1000)
+    for player in players:
+        if isinstance(player['created_at'], str):
+            player['created_at'] = datetime.fromisoformat(player['created_at'])
+    return players
+
+@api_router.post("/players", response_model=Player)
+async def create_player(player_data: PlayerCreate, admin: User = Depends(get_admin_user)):
+    player = Player(**player_data.model_dump())
+    doc = player.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.players.insert_one(doc)
+    return player
+
+@api_router.put("/players/{player_id}", response_model=Player)
+async def update_player(player_id: str, player_data: PlayerCreate, admin: User = Depends(get_admin_user)):
+    result = await db.players.update_one(
+        {"id": player_id},
+        {"$set": player_data.model_dump()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    player = await db.players.find_one({"id": player_id}, {"_id": 0})
+    if isinstance(player['created_at'], str):
+        player['created_at'] = datetime.fromisoformat(player['created_at'])
+    return Player(**player)
+
+@api_router.delete("/players/{player_id}")
+async def delete_player(player_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.players.delete_one({"id": player_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return {"message": "Player deleted successfully"}
+
+# Fixture Routes
+@api_router.get("/fixtures", response_model=List[Fixture])
+async def get_fixtures():
+    fixtures = await db.fixtures.find({}, {"_id": 0}).sort("week_number", 1).to_list(1000)
+    for fixture in fixtures:
+        if isinstance(fixture['match_date'], str):
+            fixture['match_date'] = datetime.fromisoformat(fixture['match_date'])
+        if isinstance(fixture['updated_at'], str):
+            fixture['updated_at'] = datetime.fromisoformat(fixture['updated_at'])
+    return fixtures
+
+@api_router.get("/fixtures/division/{division}", response_model=List[Fixture])
+async def get_division_fixtures(division: int):
+    fixtures = await db.fixtures.find({"division": division}, {"_id": 0}).sort("week_number", 1).to_list(1000)
+    for fixture in fixtures:
+        if isinstance(fixture['match_date'], str):
+            fixture['match_date'] = datetime.fromisoformat(fixture['match_date'])
+        if isinstance(fixture['updated_at'], str):
+            fixture['updated_at'] = datetime.fromisoformat(fixture['updated_at'])
+    return fixtures
+
+@api_router.post("/fixtures", response_model=Fixture)
+async def create_fixture(fixture_data: FixtureCreate, admin: User = Depends(get_admin_user)):
+    fixture_dict = fixture_data.model_dump()
+    fixture_dict['match_date'] = datetime.fromisoformat(fixture_data.match_date)
+    fixture = Fixture(**fixture_dict)
+    
+    doc = fixture.model_dump()
+    doc['match_date'] = doc['match_date'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    
+    await db.fixtures.insert_one(doc)
+    return fixture
+
+@api_router.put("/fixtures/{fixture_id}", response_model=Fixture)
+async def update_fixture(fixture_id: str, fixture_data: FixtureUpdate, current_user: User = Depends(get_current_user)):
+    update_data = {k: v for k, v in fixture_data.model_dump().items() if v is not None}
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.fixtures.update_one(
+        {"id": fixture_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    fixture = await db.fixtures.find_one({"id": fixture_id}, {"_id": 0})
+    if isinstance(fixture['match_date'], str):
+        fixture['match_date'] = datetime.fromisoformat(fixture['match_date'])
+    if isinstance(fixture['updated_at'], str):
+        fixture['updated_at'] = datetime.fromisoformat(fixture['updated_at'])
+    
+    return Fixture(**fixture)
+
+@api_router.post("/fixtures/{fixture_id}/goals")
+async def add_goal_scorer(fixture_id: str, goal_data: AddGoalScorer, current_user: User = Depends(get_current_user)):
+    # Get player info
+    player = await db.players.find_one({"id": goal_data.player_id}, {"_id": 0})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    goal_scorer = GoalScorer(
+        player_id=goal_data.player_id,
+        player_name=player['name'],
+        minute=goal_data.minute
+    )
+    
+    field = "home_scorers" if goal_data.team_side == "home" else "away_scorers"
+    
+    await db.fixtures.update_one(
+        {"id": fixture_id},
+        {"$push": {field: goal_scorer.model_dump()}}
+    )
+    
+    # Update player goals count
+    await db.players.update_one(
+        {"id": goal_data.player_id},
+        {"$inc": {"goals_scored": 1}}
+    )
+    
+    return {"message": "Goal scorer added successfully"}
+
+# Standings Route
+@api_router.get("/standings/division/{division}", response_model=List[StandingsRow])
+async def get_standings(division: int):
+    teams = await db.teams.find({"division": division}, {"_id": 0}).to_list(1000)
+    fixtures = await db.fixtures.find({"division": division, "status": "completed"}, {"_id": 0}).to_list(1000)
+    
+    standings = {}
+    for team in teams:
+        standings[team['id']] = {
+            'team_id': team['id'],
+            'team_name': team['name'],
+            'games_played': 0,
+            'games_won': 0,
+            'games_draw': 0,
+            'games_lost': 0,
+            'goals_for': 0,
+            'goals_against': 0,
+            'points': 0
+        }
+    
+    for fixture in fixtures:
+        home_id = fixture['home_team_id']
+        away_id = fixture['away_team_id']
+        home_score = fixture['home_score'] or 0
+        away_score = fixture['away_score'] or 0
+        
+        if home_id in standings and away_id in standings:
+            standings[home_id]['games_played'] += 1
+            standings[away_id]['games_played'] += 1
+            standings[home_id]['goals_for'] += home_score
+            standings[home_id]['goals_against'] += away_score
+            standings[away_id]['goals_for'] += away_score
+            standings[away_id]['goals_against'] += home_score
+            
+            if home_score > away_score:
+                standings[home_id]['games_won'] += 1
+                standings[home_id]['points'] += 3
+                standings[away_id]['games_lost'] += 1
+            elif home_score < away_score:
+                standings[away_id]['games_won'] += 1
+                standings[away_id]['points'] += 3
+                standings[home_id]['games_lost'] += 1
+            else:
+                standings[home_id]['games_draw'] += 1
+                standings[away_id]['games_draw'] += 1
+                standings[home_id]['points'] += 1
+                standings[away_id]['points'] += 1
+    
+    standings_list = list(standings.values())
+    standings_list.sort(key=lambda x: (x['points'], x['goals_for'] - x['goals_against']), reverse=True)
+    
+    result = []
+    for i, row in enumerate(standings_list):
+        result.append(StandingsRow(
+            position=i + 1,
+            team_id=row['team_id'],
+            team_name=row['team_name'],
+            games_played=row['games_played'],
+            games_won=row['games_won'],
+            games_draw=row['games_draw'],
+            games_lost=row['games_lost'],
+            goals_for=row['goals_for'],
+            goals_against=row['goals_against'],
+            goal_difference=row['goals_for'] - row['goals_against'],
+            points=row['points']
+        ))
+    
+    return result
+
+# Top Scorers Route
+@api_router.get("/top-scorers", response_model=List[TopScorer])
+async def get_top_scorers(division: Optional[int] = None):
+    if division:
+        teams = await db.teams.find({"division": division}, {"_id": 0}).to_list(1000)
+        team_ids = [team['id'] for team in teams]
+        players = await db.players.find({"team_id": {"$in": team_ids}}, {"_id": 0}).sort("goals_scored", -1).to_list(100)
+    else:
+        players = await db.players.find({}, {"_id": 0}).sort("goals_scored", -1).to_list(100)
+    
+    result = []
+    for player in players:
+        if player['goals_scored'] > 0:
+            team = await db.teams.find_one({"id": player['team_id']}, {"_id": 0})
+            result.append(TopScorer(
+                player_id=player['id'],
+                player_name=player['name'],
+                team_id=player['team_id'],
+                team_name=team['name'] if team else "Unknown",
+                goals=player['goals_scored']
+            ))
+    
+    return result
+
+# Subscription Routes
+@api_router.post("/subscriptions/create", response_model=Subscription)
+async def create_subscription(sub_data: SubscriptionCreate):
+    # Check if subscription already exists
+    existing = await db.subscriptions.find_one({"email": sub_data.email, "season": sub_data.season})
+    if existing:
+        raise HTTPException(status_code=400, detail="Subscription already exists for this email and season")
+    
+    expires_at = datetime.now(timezone.utc) + timedelta(days=365)
+    subscription = Subscription(
+        email=sub_data.email,
+        season=sub_data.season,
+        payment_status="completed",  # Mock payment
+        expires_at=expires_at
+    )
+    
+    doc = subscription.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['expires_at'] = doc['expires_at'].isoformat()
+    
+    await db.subscriptions.insert_one(doc)
+    return subscription
+
+@api_router.get("/subscriptions/verify/{email}")
+async def verify_subscription(email: str, season: str):
+    subscription = await db.subscriptions.find_one(
+        {"email": email, "season": season, "payment_status": "completed"},
+        {"_id": 0}
+    )
+    
+    if not subscription:
+        return {"valid": False}
+    
+    if isinstance(subscription['expires_at'], str):
+        expires_at = datetime.fromisoformat(subscription['expires_at'])
+    else:
+        expires_at = subscription['expires_at']
+    
+    is_valid = expires_at > datetime.now(timezone.utc)
+    return {"valid": is_valid}
+
+# User Management (Admin only)
+@api_router.get("/users", response_model=List[User])
+async def get_users(admin: User = Depends(get_admin_user)):
+    users = await db.users.find({}, {"_id": 0, "hashed_password": 0}).to_list(1000)
+    for user in users:
+        if isinstance(user['created_at'], str):
+            user['created_at'] = datetime.fromisoformat(user['created_at'])
+    return users
+
+# Initialize admin user
+@api_router.post("/init-admin")
+async def init_admin():
+    existing = await db.users.find_one({"username": "admin"})
+    if existing:
+        return {"message": "Admin already exists"}
+    
+    hashed_password = get_password_hash("admin123")
+    admin_user = User(username="admin", role="admin")
+    
+    doc = admin_user.model_dump()
+    doc['hashed_password'] = hashed_password
+    doc['created_at'] = doc['created_at'].isoformat()
+    
+    await db.users.insert_one(doc)
+    return {"message": "Admin user created", "username": "admin", "password": "admin123"}
 
 # Include the router in the main app
 app.include_router(api_router)
