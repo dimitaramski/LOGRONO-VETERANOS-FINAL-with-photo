@@ -6,8 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "../App";
 import { toast } from "sonner";
 import SharedNavigation from "../components/SharedNavigation";
+import { useTranslation } from "react-i18next";
 
 const StandingsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [division, setDivision] = useState(() => {
