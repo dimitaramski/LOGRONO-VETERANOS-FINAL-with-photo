@@ -133,21 +133,33 @@ const HomePage = () => {
       {/* Features Section */}
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-          <div className="glass-card p-8" data-testid="feature-card-fixtures">
+          <div 
+            className="glass-card p-8 cursor-pointer transform hover:scale-105 transition-all duration-300" 
+            onClick={() => navigate("/fixtures")}
+            data-testid="feature-card-fixtures"
+          >
             <div className="text-4xl mb-4">⚽</div>
             <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">Weekly Fixtures</h3>
             <p className="text-[#b5b5b5]">
               Follow all matches week by week. Stay updated with schedules and results from both divisions.
             </p>
           </div>
-          <div className="glass-card p-8" data-testid="feature-card-standings">
+          <div 
+            className="glass-card p-8 cursor-pointer transform hover:scale-105 transition-all duration-300" 
+            onClick={() => navigate("/standings")}
+            data-testid="feature-card-standings"
+          >
             <div className="text-4xl mb-4">📊</div>
             <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">Live Standings</h3>
             <p className="text-[#b5b5b5]">
               Track your team's position in real-time. Complete statistics including wins, draws, and goal difference.
             </p>
           </div>
-          <div className="glass-card p-8" data-testid="feature-card-scorers">
+          <div 
+            className="glass-card p-8 cursor-pointer transform hover:scale-105 transition-all duration-300" 
+            onClick={() => navigate("/top-scorers")}
+            data-testid="feature-card-scorers"
+          >
             <div className="text-4xl mb-4">🏆</div>
             <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">Top Scorers</h3>
             <p className="text-[#b5b5b5]">
