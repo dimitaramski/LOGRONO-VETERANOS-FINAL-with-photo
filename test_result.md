@@ -125,7 +125,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Database Population with Liga Veteranos Logroño Data"
+    - "Players Management - Team Folder Organization"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
