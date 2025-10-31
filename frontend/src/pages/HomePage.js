@@ -65,13 +65,27 @@ const HomePage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f10] to-[#1a1a1b]">
       <SharedNavigation currentPage="home" />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto text-center">
+      {/* Hero Section with Background Image */}
+      <section className="relative pt-32 pb-20 px-6 min-h-screen flex items-center">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(https://customer-assets.emergentagent.com/job_veteran-league/artifacts/taoniiug_pexels-shan-huang-560952599-31956023.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        {/* Dark Tint Overlay (50% black) */}
+        <div className="absolute inset-0 bg-black/50 z-0" />
+        
+        {/* Content */}
+        <div className="max-w-7xl mx-auto text-center relative z-10 w-full">
           <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
             {t('welcomeTo')} <span className="text-gradient">{t('ligaVeteranos')}</span>
           </h2>
-          <p className="text-lg sm:text-xl text-[#b5b5b5] mb-8 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-[#e5e5e5] mb-8 max-w-3xl mx-auto">
             {t('heroText')}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
