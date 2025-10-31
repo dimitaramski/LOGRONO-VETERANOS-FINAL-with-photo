@@ -675,6 +675,45 @@ async def get_top_scorers(division: Optional[int] = None):
     
     return result
 
+# Cards Statistics
+class PlayerCards(BaseModel):
+    player_id: str
+    player_name: str
+    team_id: str
+    team_name: str
+    yellow_cards: int
+    red_cards: int
+
+@api_router.get("/cards-statistics", response_model=List[PlayerCards])
+async def get_cards_statistics(division: Optional[int] = None):
+    if division:
+        teams = await db.teams.find({"division": division}, {"_id": 0}).to_list(1000)
+        team_ids = [team['id'] for team in teams]
+        players = await db.players.find({
+            "team_id": {"$in": team_ids},
+            "$or": [{"yellow_cards": {"$gt": 0}}, {"red_cards": {"$gt": 0}}]
+        }, {"_id": 0}).to_list(100)
+    else:
+        players = await db.players.find({
+            "$or": [{"yellow_cards": {"$gt": 0}}, {"red_cards": {"$gt": 0}}]
+        }, {"_id": 0}).to_list(100)
+    
+    result = []
+    for player in players:
+        team = await db.teams.find_one({"id": player['team_id']}, {"_id": 0})
+        result.append(PlayerCards(
+            player_id=player['id'],
+            player_name=player['name'],
+            team_id=player['team_id'],
+            team_name=team['name'] if team else "Unknown",
+            yellow_cards=player.get('yellow_cards', 0),
+            red_cards=player.get('red_cards', 0)
+        ))
+    
+    # Sort by red cards first, then yellow cards
+    result.sort(key=lambda x: (x.red_cards, x.yellow_cards), reverse=True)
+    return result
+
 # Subscription Routes
 @api_router.post("/subscriptions/create", response_model=Subscription)
 async def create_subscription(sub_data: SubscriptionCreate):
