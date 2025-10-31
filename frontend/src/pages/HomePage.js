@@ -57,7 +57,15 @@ const HomePage = () => {
       {/* Navigation */}
       <nav className="navbar fixed w-full top-0 z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gradient">Liga Veteranos Logroño</h1>
+          <div className="flex items-center gap-4">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_ligaveteranos/artifacts/j85zjj92_Screenshot%202025-10-31%20at%2012.08.53.png"
+              alt="Liga Veteranos Logo" 
+              className="h-12 w-12 rounded-full object-cover"
+              data-testid="league-logo"
+            />
+            <h1 className="text-2xl font-bold text-gradient">Liga Veteranos Logroño</h1>
+          </div>
           <div className="flex gap-4">
             <Button
               variant="ghost"
