@@ -190,6 +190,17 @@ class SubscriptionCreate(BaseModel):
     email: EmailStr
     season: str
 
+class InstagramPost(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    instagram_url: str
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class InstagramPostCreate(BaseModel):
+    instagram_url: str
+    description: Optional[str] = None
+
 # ============= Helper Functions =============
 
 def verify_password(plain_password, hashed_password):
