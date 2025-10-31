@@ -419,6 +419,69 @@ const TeamDashboard = ({ user, setUser }) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Add Card Modal */}
+      <Dialog open={showCardModal} onOpenChange={setShowCardModal}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">Add Card</DialogTitle>
+          </DialogHeader>
+          {selectedFixture && (
+            <form onSubmit={handleAddCard} className="space-y-4">
+              <div>
+                <Label className="text-[#e5e5e5]">Player</Label>
+                <Select
+                  value={cardForm.player_id}
+                  onValueChange={(v) => setCardForm({ ...cardForm, player_id: v })}
+                >
+                  <SelectTrigger className="input-field" data-testid="card-player-select">
+                    <SelectValue placeholder="Select player" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                    {getTeamPlayers().map((player) => (
+                      <SelectItem key={player.id} value={player.id} data-testid={`card-player-option-${player.id}`}>
+                        {player.name}
+                        {player.jersey_number && ` #${player.jersey_number}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-[#e5e5e5]">Card Type</Label>
+                <Select
+                  value={cardForm.card_type}
+                  onValueChange={(v) => setCardForm({ ...cardForm, card_type: v })}
+                >
+                  <SelectTrigger className="input-field" data-testid="card-type-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                    <SelectItem value="yellow" data-testid="yellow-card-option">🟨 Yellow Card</SelectItem>
+                    <SelectItem value="red" data-testid="red-card-option">🟥 Red Card</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-[#e5e5e5]">Minute (Optional)</Label>
+                <Input
+                  type="number"
+                  value={cardForm.minute}
+                  onChange={(e) => setCardForm({ ...cardForm, minute: e.target.value })}
+                  placeholder="Card minute"
+                  min="1"
+                  max="120"
+                  className="input-field"
+                  data-testid="card-minute-input"
+                />
+              </div>
+              <Button type="submit" className="btn-primary w-full" data-testid="add-card-submit">
+                Add Card
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
