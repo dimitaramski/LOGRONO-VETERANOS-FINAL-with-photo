@@ -87,16 +87,16 @@ const StandingsPage = () => {
                   <table className="w-full" data-testid="standings-table">
                     <thead>
                       <tr className="table-header">
-                        <th className="p-4 text-left">Pos</th>
-                        <th className="p-4 text-left">Team</th>
-                        <th className="p-4 text-center">GP</th>
-                        <th className="p-4 text-center">W</th>
-                        <th className="p-4 text-center">D</th>
-                        <th className="p-4 text-center">L</th>
-                        <th className="p-4 text-center">GF</th>
-                        <th className="p-4 text-center">GA</th>
-                        <th className="p-4 text-center">GD</th>
-                        <th className="p-4 text-center">Pts</th>
+                        <th className="p-4 text-left">{t('pos', 'Pos')}</th>
+                        <th className="p-4 text-left">{t('team', 'Equipo')}</th>
+                        <th className="p-4 text-center">{t('gp', 'PJ')}</th>
+                        <th className="p-4 text-center">{t('w', 'PG')}</th>
+                        <th className="p-4 text-center">{t('d', 'PE')}</th>
+                        <th className="p-4 text-center">{t('l', 'PP')}</th>
+                        <th className="p-4 text-center">{t('gf', 'GF')}</th>
+                        <th className="p-4 text-center">{t('ga', 'GC')}</th>
+                        <th className="p-4 text-center">{t('gd', 'DG')}</th>
+                        <th className="p-4 text-center">{t('pts', 'Pts')}</th>
                       </tr>
                     </thead>
                     <tbody>
