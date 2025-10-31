@@ -1202,21 +1202,131 @@ const AdminDashboard = ({ user, setUser }) => {
                     {/* Current Logo Preview */}
                     <div>
                       <Label className="text-[#e5e5e5] mb-2 block">
-                        {t('admin.currentLogo', 'Current Logo')}
+                        {t('admin.currentLogo', 'Current Logo')} - {t('admin.preview', 'Preview')}
                       </Label>
                       <div className="p-6 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10 flex items-center justify-center">
                         <img
                           src={logoUrl}
                           alt="League Logo"
-                          className="w-32 h-32 object-contain"
+                          style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}
+                          className="object-contain"
                           onError={(e) => {
                             e.target.src = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
                           }}
                         />
                       </div>
+                      <p className="text-xs text-[#b5b5b5] mt-2 text-center">
+                        {t('admin.currentSize', 'Current size')}: {logoWidth}px × {logoHeight}px
+                      </p>
                     </div>
 
-                    {/* Update Logo */}
+                    {/* Logo Size Controls */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-[#e5e5e5] mb-2 block">
+                          {t('admin.logoWidth', 'Logo Width (px)')}
+                        </Label>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            type="number"
+                            value={logoWidth}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 10;
+                              setLogoWidth(val);
+                            }}
+                            min="10"
+                            max="200"
+                            className="input-field"
+                          />
+                          <Button
+                            size="sm"
+                            className="btn-secondary"
+                            onClick={() => {
+                              localStorage.setItem('logoWidth', logoWidth.toString());
+                              toast.success(t('admin.sizeUpdated', 'Size updated'));
+                            }}
+                          >
+                            {t('admin.save', 'Save')}
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-[#e5e5e5] mb-2 block">
+                          {t('admin.logoHeight', 'Logo Height (px)')}
+                        </Label>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            type="number"
+                            value={logoHeight}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 10;
+                              setLogoHeight(val);
+                            }}
+                            min="10"
+                            max="200"
+                            className="input-field"
+                          />
+                          <Button
+                            size="sm"
+                            className="btn-secondary"
+                            onClick={() => {
+                              localStorage.setItem('logoHeight', logoHeight.toString());
+                              toast.success(t('admin.sizeUpdated', 'Size updated'));
+                            }}
+                          >
+                            {t('admin.save', 'Save')}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#f4c542]/20 text-[#f4c542] hover:bg-[#f4c542]/10"
+                        onClick={() => {
+                          setLogoWidth(40);
+                          setLogoHeight(40);
+                          localStorage.setItem('logoWidth', '40');
+                          localStorage.setItem('logoHeight', '40');
+                          toast.success(t('admin.sizeReset', 'Size reset to 40×40'));
+                        }}
+                      >
+                        {t('admin.resetSize', 'Reset Size (40×40)')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#f4c542]/20 text-[#f4c542] hover:bg-[#f4c542]/10"
+                        onClick={() => {
+                          setLogoWidth(60);
+                          setLogoHeight(60);
+                          localStorage.setItem('logoWidth', '60');
+                          localStorage.setItem('logoHeight', '60');
+                          toast.success(t('admin.sizeUpdated', 'Size set to 60×60'));
+                        }}
+                      >
+                        {t('admin.mediumSize', 'Medium (60×60)')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#f4c542]/20 text-[#f4c542] hover:bg-[#f4c542]/10"
+                        onClick={() => {
+                          setLogoWidth(80);
+                          setLogoHeight(80);
+                          localStorage.setItem('logoWidth', '80');
+                          localStorage.setItem('logoHeight', '80');
+                          toast.success(t('admin.sizeUpdated', 'Size set to 80×80'));
+                        }}
+                      >
+                        {t('admin.largeSize', 'Large (80×80)')}
+                      </Button>
+                    </div>
+
+                    {/* Update Logo URL */}
                     <div>
                       <Label className="text-[#e5e5e5] mb-2 block">
                         {t('admin.updateLogo', 'Update Logo URL')}
@@ -1243,7 +1353,7 @@ const AdminDashboard = ({ user, setUser }) => {
                         </Button>
                       </div>
                       <p className="text-xs text-[#b5b5b5] mt-2">
-                        {t('admin.logoUrlDesc', 'Enter the URL of the logo image (PNG, JPG, SVG supported). Recommended size: 200x200px')}
+                        {t('admin.logoUrlDesc', 'Enter the URL of the logo image (PNG, JPG, SVG supported)')}
                       </p>
                     </div>
 
@@ -1255,11 +1365,15 @@ const AdminDashboard = ({ user, setUser }) => {
                         onClick={() => {
                           const defaultLogo = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
                           setLogoUrl(defaultLogo);
+                          setLogoWidth(40);
+                          setLogoHeight(40);
                           localStorage.setItem('leagueLogo', defaultLogo);
+                          localStorage.setItem('logoWidth', '40');
+                          localStorage.setItem('logoHeight', '40');
                           toast.success(t('admin.logoReset', 'Logo reset to default'));
                         }}
                       >
-                        {t('admin.resetToDefault', 'Reset to Default Logo')}
+                        {t('admin.resetToDefault', 'Reset to Default Logo & Size')}
                       </Button>
                     </div>
                   </div>
