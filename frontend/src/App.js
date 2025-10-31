@@ -13,6 +13,7 @@ import StandingsPage from "./pages/StandingsPage";
 import TopScorersPage from "./pages/TopScorersPage";
 import CopaPage from "./pages/CopaPage";
 import SanctionsPage from "./pages/SanctionsPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
