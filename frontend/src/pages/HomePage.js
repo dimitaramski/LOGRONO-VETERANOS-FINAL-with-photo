@@ -14,9 +14,11 @@ const HomePage = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [instagramPosts, setInstagramPosts] = useState([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+    setMobileMenuOpen(false);
   };
 
   useEffect(() => {
