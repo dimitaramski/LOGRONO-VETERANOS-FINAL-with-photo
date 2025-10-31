@@ -273,7 +273,7 @@ const TeamDashboard = ({ user, setUser }) => {
                                 ))}
                               </div>
                             )}
-                            {fixture.away_scorers.length > 0 && (
+                            {fixture.away_scorers?.length > 0 && (
                               <div data-testid={`away-scorers-${fixture.id}`}>
                                 <p className="text-sm text-[#b5b5b5] mb-1">
                                   {teams[fixture.away_team_id]?.name} scorers:
@@ -282,6 +282,34 @@ const TeamDashboard = ({ user, setUser }) => {
                                   <p key={idx} className="text-sm text-[#e5e5e5]" data-testid={`away-scorer-${idx}`}>
                                     ⚽ {scorer.player_name}
                                     {scorer.minute && ` (${scorer.minute}')`}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Display cards */}
+                            {fixture.home_cards?.length > 0 && (
+                              <div className="mb-2 mt-3" data-testid={`home-cards-${fixture.id}`}>
+                                <p className="text-sm text-[#b5b5b5] mb-1">
+                                  {teams[fixture.home_team_id]?.name} cards:
+                                </p>
+                                {fixture.home_cards.map((card, idx) => (
+                                  <p key={idx} className="text-sm text-[#e5e5e5]" data-testid={`home-card-${idx}`}>
+                                    {card.card_type === "yellow" ? "🟨" : "🟥"} {card.player_name}
+                                    {card.minute && ` (${card.minute}')`}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                            {fixture.away_cards?.length > 0 && (
+                              <div data-testid={`away-cards-${fixture.id}`}>
+                                <p className="text-sm text-[#b5b5b5] mb-1">
+                                  {teams[fixture.away_team_id]?.name} cards:
+                                </p>
+                                {fixture.away_cards.map((card, idx) => (
+                                  <p key={idx} className="text-sm text-[#e5e5e5]" data-testid={`away-card-${idx}`}>
+                                    {card.card_type === "yellow" ? "🟨" : "🟥"} {card.player_name}
+                                    {card.minute && ` (${card.minute}')`}
                                   </p>
                                 ))}
                               </div>
