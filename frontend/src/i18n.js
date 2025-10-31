@@ -283,6 +283,9 @@ const resources = {
       'heroText': 'Experience the passion of veteran football in Logroño. Two divisions, 24 teams, one community united by the love of the game.',
       'subscribeFor': 'Subscribe for €50/Team/Season',
       'viewStandings': 'View Standings',
+      'season': 'Season',
+      'subscriptionDesc': 'Full access to fixtures, standings, and statistics for the entire season',
+      'perTeam': 'Per Team/Season',
       
       // Features
       'weeklyFixtures': 'Weekly Fixtures',
