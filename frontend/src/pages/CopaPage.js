@@ -12,6 +12,7 @@ import {
 import { api } from "../App";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import SharedNavigation from "../components/SharedNavigation";
 
 const CopaPage = () => {
   const { t } = useTranslation();
