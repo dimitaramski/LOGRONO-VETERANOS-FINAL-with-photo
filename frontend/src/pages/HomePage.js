@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,28 @@ const HomePage = () => {
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [instagramPosts, setInstagramPosts] = useState([]);
+
+  useEffect(() => {
+    fetchInstagramPosts();
+  }, []);
+
+  const fetchInstagramPosts = async () => {
+    try {
+      const response = await api.get("/instagram-posts");
+      setInstagramPosts(response.data);
+    } catch (error) {
+      console.error("Failed to load Instagram posts");
+    }
+  };
+
+  const getInstagramEmbedUrl = (url) => {
+    // Convert Instagram URL to embed URL
+    if (url.includes("/p/") || url.includes("/reel/")) {
+      return url.endsWith("/") ? `${url}embed` : `${url}/embed`;
+    }
+    return url;
+  };
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
