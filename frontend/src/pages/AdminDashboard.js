@@ -757,6 +757,117 @@ const AdminDashboard = ({ user, setUser }) => {
               </Card>
             </TabsContent>
 
+            {/* Sanctions Tab */}
+            <TabsContent value="sanctions">
+              <Card className="glass-card border-[#f4c542]/20">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-[#f4c542]">Sanctions Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loading ? (
+                    <div className="text-center text-[#f4c542]">Loading...</div>
+                  ) : (
+                    <div className="space-y-6">
+                      {/* Red Cards */}
+                      <div>
+                        <h3 className="text-xl font-bold text-red-500 mb-4">🟥 Red Cards</h3>
+                        {sanctions.filter((s) => s.total_red_cards > 0).length > 0 ? (
+                          <div className="space-y-3">
+                            {sanctions
+                              .filter((s) => s.total_red_cards > 0)
+                              .map((sanction) => (
+                                <div
+                                  key={sanction.id}
+                                  className="p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
+                                  data-testid={`sanction-item-${sanction.id}`}
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex-1">
+                                      <p className="text-[#e5e5e5] font-semibold">
+                                        {sanction.player_name} - {sanction.team_name}
+                                      </p>
+                                      <p className="text-sm text-[#b5b5b5]">
+                                        🟥 Red Cards: {sanction.total_red_cards} | 🟨 Yellow Cards: {sanction.total_yellow_cards}
+                                      </p>
+                                      {sanction.suspension_games ? (
+                                        <div className="mt-2 p-2 bg-red-500/10 rounded">
+                                          <p className="text-red-500 font-semibold">
+                                            Suspended: {sanction.suspension_games} games
+                                          </p>
+                                          {sanction.suspension_from_week && sanction.suspension_to_week && (
+                                            <p className="text-sm text-[#e5e5e5]">
+                                              Weeks: {sanction.suspension_from_week} - {sanction.suspension_to_week}
+                                            </p>
+                                          )}
+                                          {sanction.notes && (
+                                            <p className="text-xs text-[#b5b5b5] mt-1">{sanction.notes}</p>
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm text-yellow-500 mt-2">⚠️ Suspension not set</p>
+                                      )}
+                                    </div>
+                                    <Button
+                                      size="sm"
+                                      className="btn-secondary"
+                                      onClick={() => {
+                                        setSanctionForm({
+                                          player_id: sanction.player_id,
+                                          suspension_games: sanction.suspension_games?.toString() || "",
+                                          suspension_from_week: sanction.suspension_from_week?.toString() || "",
+                                          suspension_to_week: sanction.suspension_to_week?.toString() || "",
+                                          notes: sanction.notes || "",
+                                        });
+                                        setShowSanctionModal(true);
+                                      }}
+                                      data-testid={`edit-sanction-${sanction.id}`}
+                                    >
+                                      Edit Suspension
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        ) : (
+                          <p className="text-[#b5b5b5]">No red cards recorded</p>
+                        )}
+                      </div>
+
+                      {/* Yellow Cards */}
+                      <div>
+                        <h3 className="text-xl font-bold text-yellow-500 mb-4">🟨 Yellow Cards</h3>
+                        {sanctions.filter((s) => s.total_yellow_cards > 0 && s.total_red_cards === 0).length > 0 ? (
+                          <div className="space-y-2">
+                            {sanctions
+                              .filter((s) => s.total_yellow_cards > 0 && s.total_red_cards === 0)
+                              .map((sanction) => (
+                                <div
+                                  key={sanction.id}
+                                  className="p-3 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <p className="text-[#e5e5e5]">
+                                        {sanction.player_name} - {sanction.team_name}
+                                      </p>
+                                      <p className="text-sm text-yellow-500">
+                                        🟨 Yellow Cards: {sanction.total_yellow_cards}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        ) : (
+                          <p className="text-[#b5b5b5]">No yellow cards recorded</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             {/* Instagram Tab */}
             <TabsContent value="instagram">
               <Card className="glass-card border-[#f4c542]/20">
