@@ -316,7 +316,9 @@ const AdminDashboard = ({ user, setUser }) => {
                               {player.name} {player.jersey_number && `#${player.jersey_number}`}
                             </p>
                             <p className="text-sm text-[#b5b5b5]" data-testid={`player-team-${player.id}`}>{getTeamName(player.team_id)}</p>
-                            <p className="text-sm text-[#f4c542]" data-testid={`player-goals-${player.id}`}>Goals: {player.goals_scored}</p>
+                            <p className="text-sm text-[#f4c542]" data-testid={`player-goals-${player.id}`}>
+                              ⚽ Goals: {player.goals_scored} | 🟨 Yellow: {player.yellow_cards || 0} | 🟥 Red: {player.red_cards || 0}
+                            </p>
                           </div>
                           <Button
                             variant="destructive"
