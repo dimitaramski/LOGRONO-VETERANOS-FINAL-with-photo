@@ -72,14 +72,14 @@ const HomePage = () => {
             />
             <h1 className="text-2xl font-bold text-gradient">Liga Veteranos Logroño</h1>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
             <Button
               variant="ghost"
               className="text-[#e5e5e5] hover:text-[#f4c542]"
               onClick={() => navigate("/fixtures")}
               data-testid="nav-fixtures-btn"
             >
-              Fixtures
+              {t('fixtures')}
             </Button>
             <Button
               variant="ghost"
@@ -87,7 +87,7 @@ const HomePage = () => {
               onClick={() => navigate("/standings")}
               data-testid="nav-standings-btn"
             >
-              Standings
+              {t('standings')}
             </Button>
             <Button
               variant="ghost"
@@ -95,14 +95,38 @@ const HomePage = () => {
               onClick={() => navigate("/top-scorers")}
               data-testid="nav-top-scorers-btn"
             >
-              Top Scorers
+              {t('topScorers')}
             </Button>
+            
+            {/* Language Switcher */}
+            <div className="flex gap-1 ml-2 border-l border-[#f4c542]/30 pl-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`text-sm ${i18n.language === 'es' ? 'text-[#f4c542] font-bold' : 'text-[#b5b5b5]'}`}
+                onClick={() => changeLanguage('es')}
+                data-testid="lang-es-btn"
+              >
+                ES
+              </Button>
+              <span className="text-[#b5b5b5]">/</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`text-sm ${i18n.language === 'en' ? 'text-[#f4c542] font-bold' : 'text-[#b5b5b5]'}`}
+                onClick={() => changeLanguage('en')}
+                data-testid="lang-en-btn"
+              >
+                EN
+              </Button>
+            </div>
+            
             <Button
               className="btn-primary"
               onClick={() => navigate("/login")}
               data-testid="nav-login-btn"
             >
-              Login
+              {t('login')}
             </Button>
           </div>
         </div>
