@@ -90,6 +90,18 @@ const TeamDashboard = ({ user, setUser }) => {
     setShowGoalModal(true);
   };
 
+  const handleOpenCardModal = (fixture) => {
+    setSelectedFixture(fixture);
+    const isHome = fixture.home_team_id === user.team_id;
+    setCardForm({
+      player_id: "",
+      team_side: isHome ? "home" : "away",
+      card_type: "yellow",
+      minute: "",
+    });
+    setShowCardModal(true);
+  };
+
   const handleUpdateScore = async (e) => {
     e.preventDefault();
     try {
@@ -122,6 +134,26 @@ const TeamDashboard = ({ user, setUser }) => {
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.detail || "Failed to add goal scorer");
+    }
+  };
+
+  const handleAddCard = async (e) => {
+    e.preventDefault();
+    try {
+      const data = {
+        player_id: cardForm.player_id,
+        team_side: cardForm.team_side,
+        card_type: cardForm.card_type,
+      };
+      if (cardForm.minute) {
+        data.minute = parseInt(cardForm.minute);
+      }
+      await api.post(`/fixtures/${selectedFixture.id}/cards`, data);
+      toast.success("Card added successfully");
+      setShowCardModal(false);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to add card");
     }
   };
 
