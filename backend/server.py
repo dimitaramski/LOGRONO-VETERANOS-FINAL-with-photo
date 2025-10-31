@@ -1280,6 +1280,98 @@ async def add_copa_bracket_card(bracket_id: str, card_data: AddCard, admin: User
     
     return {"message": "Card added successfully"}
 
+# ============= Sanctions Routes =============
+
+@api_router.get("/sanctions", response_model=List[Sanction])
+async def get_sanctions():
+    # Get all players with yellow or red cards
+    players = await db.players.find(
+        {"$or": [{"yellow_cards": {"$gt": 0}}, {"red_cards": {"$gt": 0}}]},
+        {"_id": 0}
+    ).to_list(length=None)
+    
+    sanctions = []
+    for player in players:
+        # Get team info
+        team = await db.teams.find_one({"id": player['team_id']})
+        if not team:
+            continue
+        
+        # Check if sanction record exists
+        sanction_doc = await db.sanctions.find_one({"player_id": player['id']})
+        
+        if sanction_doc:
+            if isinstance(sanction_doc.get('created_at'), str):
+                sanction_doc['created_at'] = datetime.fromisoformat(sanction_doc['created_at'])
+            if isinstance(sanction_doc.get('updated_at'), str):
+                sanction_doc['updated_at'] = datetime.fromisoformat(sanction_doc['updated_at'])
+            sanctions.append(Sanction(**sanction_doc))
+        else:
+            # Create sanction record from player data
+            sanction = Sanction(
+                player_id=player['id'],
+                player_name=player['name'],
+                team_id=player['team_id'],
+                team_name=team['name'],
+                card_type="red" if player.get('red_cards', 0) > 0 else "yellow",
+                total_yellow_cards=player.get('yellow_cards', 0),
+                total_red_cards=player.get('red_cards', 0)
+            )
+            # Save to database
+            doc = sanction.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            doc['updated_at'] = doc['updated_at'].isoformat()
+            await db.sanctions.insert_one(doc)
+            sanctions.append(sanction)
+    
+    return sanctions
+
+@api_router.put("/sanctions/{player_id}")
+async def update_sanction(player_id: str, sanction_data: SanctionUpdate, admin: User = Depends(get_admin_user)):
+    # Get player and team info
+    player = await db.players.find_one({"id": player_id})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    team = await db.teams.find_one({"id": player['team_id']})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # Check if sanction exists
+    sanction = await db.sanctions.find_one({"player_id": player_id})
+    
+    update_dict = {k: v for k, v in sanction_data.model_dump().items() if v is not None}
+    update_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    if sanction:
+        # Update existing sanction
+        await db.sanctions.update_one({"player_id": player_id}, {"$set": update_dict})
+    else:
+        # Create new sanction record
+        new_sanction = Sanction(
+            player_id=player['id'],
+            player_name=player['name'],
+            team_id=player['team_id'],
+            team_name=team['name'],
+            card_type="red" if player.get('red_cards', 0) > 0 else "yellow",
+            total_yellow_cards=player.get('yellow_cards', 0),
+            total_red_cards=player.get('red_cards', 0),
+            **update_dict
+        )
+        doc = new_sanction.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        await db.sanctions.insert_one(doc)
+    
+    return {"message": "Sanction updated successfully"}
+
+@api_router.delete("/sanctions/{player_id}")
+async def delete_sanction(player_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.sanctions.delete_one({"player_id": player_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Sanction not found")
+    return {"message": "Sanction deleted successfully"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
