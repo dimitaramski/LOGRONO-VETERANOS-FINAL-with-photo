@@ -21,8 +21,10 @@ import {
 } from "@/components/ui/accordion";
 import { api } from "../App";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const AdminDashboard = ({ user, setUser }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("teams");
   const [teams, setTeams] = useState([]);
