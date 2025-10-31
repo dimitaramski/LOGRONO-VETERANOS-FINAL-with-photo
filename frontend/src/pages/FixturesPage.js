@@ -3,19 +3,40 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { api } from "../App";
 import { toast } from "sonner";
 
 const FixturesPage = () => {
   const navigate = useNavigate();
   const [division, setDivision] = useState(1);
+  const [selectedWeek, setSelectedWeek] = useState("all");
   const [fixtures, setFixtures] = useState([]);
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedFixture, setSelectedFixture] = useState(null);
+  const [showMatchDetails, setShowMatchDetails] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     fetchData();
   }, [division]);
+
+  useEffect(() => {
+    // Update time every minute for live matches
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -39,6 +60,34 @@ const FixturesPage = () => {
     }
   };
 
+  const getMatchMinute = (matchDate) => {
+    const match = new Date(matchDate);
+    const now = currentTime;
+    const diffMs = now - match;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 0) return null; // Not started yet
+    if (diffMins <= 45) return diffMins; // First half
+    if (diffMins <= 60) return "HT"; // Halftime (45-60 mins)
+    if (diffMins <= 105) return diffMins - 15; // Second half (subtract halftime)
+    return "FT"; // Full time
+  };
+
+  const getMatchStatus = (fixture) => {
+    if (fixture.status === "completed") return "FT";
+    const minute = getMatchMinute(fixture.match_date);
+    if (minute === null) return "scheduled";
+    if (minute === "HT") return "HT";
+    if (minute === "FT") return "FT";
+    return `${minute}'`;
+  };
+
+  const isMatchLive = (fixture) => {
+    if (fixture.status === "completed") return false;
+    const minute = getMatchMinute(fixture.match_date);
+    return minute !== null && minute !== "FT";
+  };
+
   const groupByWeek = () => {
     const grouped = {};
     fixtures.forEach((fixture) => {
@@ -50,7 +99,18 @@ const FixturesPage = () => {
     return grouped;
   };
 
-  const weeks = groupByWeek();
+  const getAvailableWeeks = () => {
+    const weeks = groupByWeek();
+    return Object.keys(weeks).sort((a, b) => parseInt(a) - parseInt(b));
+  };
+
+  const getFilteredWeeks = () => {
+    const weeks = groupByWeek();
+    if (selectedWeek === "all") return weeks;
+    return { [selectedWeek]: weeks[selectedWeek] || [] };
+  };
+
+  const weeks = getFilteredWeeks();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f10] to-[#1a1a1b]">
