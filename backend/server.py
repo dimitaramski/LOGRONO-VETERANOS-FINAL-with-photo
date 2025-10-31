@@ -452,6 +452,136 @@ async def add_goal_scorer(fixture_id: str, goal_data: AddGoalScorer, current_use
     
     return {"message": "Goal scorer added successfully"}
 
+@api_router.delete("/fixtures/{fixture_id}/goals")
+async def remove_goal_scorer(fixture_id: str, goal_data: RemoveGoalScorer, admin: User = Depends(get_admin_user)):
+    # Get fixture to find the goal scorer
+    fixture = await db.fixtures.find_one({"id": fixture_id}, {"_id": 0})
+    if not fixture:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    field = "home_scorers" if goal_data.team_side == "home" else "away_scorers"
+    scorers = fixture.get(field, [])
+    
+    # Find the goal scorer and player_id
+    player_id = None
+    for scorer in scorers:
+        if scorer['id'] == goal_data.goal_id:
+            player_id = scorer['player_id']
+            break
+    
+    if not player_id:
+        raise HTTPException(status_code=404, detail="Goal scorer not found")
+    
+    # Remove goal scorer from fixture
+    await db.fixtures.update_one(
+        {"id": fixture_id},
+        {"$pull": {field: {"id": goal_data.goal_id}}}
+    )
+    
+    # Decrement player goals count
+    await db.players.update_one(
+        {"id": player_id},
+        {"$inc": {"goals_scored": -1}}
+    )
+    
+    return {"message": "Goal scorer removed successfully"}
+
+@api_router.post("/fixtures/{fixture_id}/cards")
+async def add_card(fixture_id: str, card_data: AddCard, current_user: User = Depends(get_current_user)):
+    # Get player info
+    player = await db.players.find_one({"id": card_data.player_id}, {"_id": 0})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    card = Card(
+        player_id=card_data.player_id,
+        player_name=player['name'],
+        card_type=card_data.card_type,
+        minute=card_data.minute
+    )
+    
+    field = "home_cards" if card_data.team_side == "home" else "away_cards"
+    
+    await db.fixtures.update_one(
+        {"id": fixture_id},
+        {"$push": {field: card.model_dump()}}
+    )
+    
+    # Update player card count
+    card_field = "yellow_cards" if card_data.card_type == "yellow" else "red_cards"
+    await db.players.update_one(
+        {"id": card_data.player_id},
+        {"$inc": {card_field: 1}}
+    )
+    
+    return {"message": "Card added successfully"}
+
+@api_router.delete("/fixtures/{fixture_id}/cards")
+async def remove_card(fixture_id: str, card_data: RemoveCard, admin: User = Depends(get_admin_user)):
+    # Get fixture to find the card
+    fixture = await db.fixtures.find_one({"id": fixture_id}, {"_id": 0})
+    if not fixture:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    field = "home_cards" if card_data.team_side == "home" else "away_cards"
+    cards = fixture.get(field, [])
+    
+    # Find the card and player_id
+    player_id = None
+    card_type = None
+    for card in cards:
+        if card['id'] == card_data.card_id:
+            player_id = card['player_id']
+            card_type = card['card_type']
+            break
+    
+    if not player_id:
+        raise HTTPException(status_code=404, detail="Card not found")
+    
+    # Remove card from fixture
+    await db.fixtures.update_one(
+        {"id": fixture_id},
+        {"$pull": {field: {"id": card_data.card_id}}}
+    )
+    
+    # Decrement player card count
+    card_field = "yellow_cards" if card_type == "yellow" else "red_cards"
+    await db.players.update_one(
+        {"id": player_id},
+        {"$inc": {card_field: -1}}
+    )
+    
+    return {"message": "Card removed successfully"}
+
+@api_router.delete("/fixtures/{fixture_id}")
+async def delete_fixture(fixture_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.fixtures.delete_one({"id": fixture_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    return {"message": "Fixture deleted successfully"}
+
+@api_router.post("/fixtures/bulk")
+async def create_fixtures_bulk(data: FixtureCreateBulk, admin: User = Depends(get_admin_user)):
+    created_fixtures = []
+    for fixture_data in data.fixtures:
+        fixture_dict = {
+            "division": data.division,
+            "week_number": data.week_number,
+            "home_team_id": fixture_data["home_team_id"],
+            "away_team_id": fixture_data["away_team_id"],
+            "match_date": datetime.fromisoformat(fixture_data["match_date"])
+        }
+        fixture = Fixture(**fixture_dict)
+        
+        doc = fixture.model_dump()
+        doc['match_date'] = doc['match_date'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        
+        await db.fixtures.insert_one(doc)
+        created_fixtures.append(fixture)
+    
+    return {"message": f"Created {len(created_fixtures)} fixtures successfully"}
+
 # Standings Route
 @api_router.get("/standings/division/{division}", response_model=List[StandingsRow])
 async def get_standings(division: int):
