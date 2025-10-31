@@ -10,6 +10,7 @@ const StandingsPage = () => {
   const navigate = useNavigate();
   const [division, setDivision] = useState(1);
   const [standings, setStandings] = useState([]);
+  const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,8 +20,17 @@ const StandingsPage = () => {
   const fetchStandings = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/standings/division/${division}`);
-      setStandings(response.data);
+      const [standingsRes, teamsRes] = await Promise.all([
+        api.get(`/standings/division/${division}`),
+        api.get("/teams"),
+      ]);
+      setStandings(standingsRes.data);
+      
+      const teamsMap = {};
+      teamsRes.data.forEach((team) => {
+        teamsMap[team.id] = team;
+      });
+      setTeams(teamsMap);
     } catch (error) {
       toast.error("Failed to load standings");
     } finally {
