@@ -372,6 +372,13 @@ const AdminDashboard = ({ user, setUser }) => {
                                 </p>
                               )}
                             </div>
+                            <Button
+                              className="btn-primary"
+                              onClick={() => navigate(`/admin/fixture/${fixture.id}`)}
+                              data-testid={`edit-fixture-${fixture.id}`}
+                            >
+                              Edit Match
+                            </Button>
                           </div>
                         </div>
                       ))}
