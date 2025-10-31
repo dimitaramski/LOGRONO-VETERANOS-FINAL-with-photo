@@ -305,6 +305,7 @@ const FixturesPage = () => {
                         );
                         })}
                       </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
