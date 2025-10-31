@@ -1308,6 +1308,9 @@ async def get_sanctions():
                 sanction_doc['created_at'] = datetime.fromisoformat(sanction_doc['created_at'])
             if isinstance(sanction_doc.get('updated_at'), str):
                 sanction_doc['updated_at'] = datetime.fromisoformat(sanction_doc['updated_at'])
+            # Ensure division is included
+            if 'division' not in sanction_doc:
+                sanction_doc['division'] = team.get('division', 1)
             sanctions.append(Sanction(**sanction_doc))
         else:
             # Create sanction record from player data
@@ -1316,6 +1319,7 @@ async def get_sanctions():
                 player_name=player['name'],
                 team_id=player['team_id'],
                 team_name=team['name'],
+                division=team.get('division', 1),
                 card_type="red" if player.get('red_cards', 0) > 0 else "yellow",
                 total_yellow_cards=player.get('yellow_cards', 0),
                 total_red_cards=player.get('red_cards', 0)
