@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "../App";
 import { toast } from "sonner";
+import SharedNavigation from "../components/SharedNavigation";
 
 const HomePage = () => {
   const navigate = useNavigate();
