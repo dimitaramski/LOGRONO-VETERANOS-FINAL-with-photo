@@ -32,7 +32,8 @@ const AdminDashboard = ({ user, setUser }) => {
   const [showUserModal, setShowUserModal] = useState(false);
 
   // Form states
-  const [teamForm, setTeamForm] = useState({ name: "", division: 1 });
+  const [teamForm, setTeamForm] = useState({ name: "", division: 1, logo_url: "" });
+  const [editingTeam, setEditingTeam] = useState(null);
   const [playerForm, setPlayerForm] = useState({ name: "", team_id: "", jersey_number: "" });
   const [fixtureForm, setFixtureForm] = useState({
     division: 1,
