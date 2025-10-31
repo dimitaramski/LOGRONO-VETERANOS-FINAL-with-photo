@@ -186,6 +186,39 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Instagram Blog Section */}
+      {instagramPosts.length > 0 && (
+        <section className="py-20 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl sm:text-5xl font-bold text-center mb-4">
+              <span className="text-gradient">Highlights & Stories</span>
+            </h2>
+            <p className="text-center text-[#b5b5b5] mb-12 max-w-2xl mx-auto">
+              Relive the best moments, player interviews, and behind-the-scenes content from Liga Veteranos
+            </p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {instagramPosts.map((post) => (
+                <div key={post.id} className="glass-card p-4" data-testid={`instagram-post-${post.id}`}>
+                  <div className="aspect-square rounded-lg overflow-hidden mb-3">
+                    <iframe
+                      src={getInstagramEmbedUrl(post.instagram_url)}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      scrolling="no"
+                      allowTransparency={true}
+                      title={`Instagram post ${post.id}`}
+                    />
+                  </div>
+                  {post.description && (
+                    <p className="text-[#e5e5e5] text-sm">{post.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-[#f4c542]/10">
         <div className="max-w-7xl mx-auto text-center">
