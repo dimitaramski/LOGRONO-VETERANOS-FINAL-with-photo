@@ -486,7 +486,7 @@ const AdminDashboard = ({ user, setUser }) => {
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-7 bg-[#1a1a1b] border border-[#f4c542]/20 mb-8">
+            <TabsList className="grid w-full grid-cols-8 bg-[#1a1a1b] border border-[#f4c542]/20 mb-8">
               <TabsTrigger
                 value="teams"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
@@ -535,6 +535,13 @@ const AdminDashboard = ({ user, setUser }) => {
                 data-testid="instagram-tab"
               >
                 {t('admin.instagram')}
+              </TabsTrigger>
+              <TabsTrigger
+                value="settings"
+                className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
+                data-testid="settings-tab"
+              >
+                {t('admin.settings', 'Settings')}
               </TabsTrigger>
             </TabsList>
 
