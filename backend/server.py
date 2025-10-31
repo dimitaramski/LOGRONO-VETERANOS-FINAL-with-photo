@@ -201,6 +201,97 @@ class InstagramPostCreate(BaseModel):
     instagram_url: str
     description: Optional[str] = None
 
+# Copa Models
+class CopaGroup(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    group_name: str  # A, B, C, or D
+    team_ids: List[str] = []
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CopaGroupCreate(BaseModel):
+    group_name: str
+    team_ids: List[str]
+
+class CopaFixture(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    group_name: str  # A, B, C, or D
+    jornada: int  # 1-5
+    home_team_id: str
+    away_team_id: str
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    match_date: datetime
+    status: str = "scheduled"  # scheduled, live, halftime, or completed
+    home_scorers: List[GoalScorer] = []
+    away_scorers: List[GoalScorer] = []
+    home_cards: List[Card] = []
+    away_cards: List[Card] = []
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CopaFixtureCreate(BaseModel):
+    group_name: str
+    jornada: int
+    home_team_id: str
+    away_team_id: str
+    match_date: str
+
+class CopaFixtureUpdate(BaseModel):
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    status: Optional[str] = None
+    jornada: Optional[int] = None
+    match_date: Optional[str] = None
+
+class CopaBracket(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    round_type: str  # round_of_16, quarter_final, semi_final, final
+    match_position: int  # Position in the bracket (1-8 for R16, 1-4 for QF, 1-2 for SF, 1 for Final)
+    home_team_id: Optional[str] = None
+    away_team_id: Optional[str] = None
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    match_date: Optional[datetime] = None
+    status: str = "scheduled"  # scheduled, live, halftime, or completed
+    winner_team_id: Optional[str] = None
+    home_scorers: List[GoalScorer] = []
+    away_scorers: List[GoalScorer] = []
+    home_cards: List[Card] = []
+    away_cards: List[Card] = []
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CopaBracketCreate(BaseModel):
+    round_type: str
+    match_position: int
+    home_team_id: Optional[str] = None
+    away_team_id: Optional[str] = None
+    match_date: Optional[str] = None
+
+class CopaBracketUpdate(BaseModel):
+    home_team_id: Optional[str] = None
+    away_team_id: Optional[str] = None
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    status: Optional[str] = None
+    match_date: Optional[str] = None
+    winner_team_id: Optional[str] = None
+
+class CopaStandingsRow(BaseModel):
+    position: int
+    team_id: str
+    team_name: str
+    games_played: int
+    games_won: int
+    games_draw: int
+    games_lost: int
+    goals_for: int
+    goals_against: int
+    goal_difference: int
+    points: int
+
 # ============= Helper Functions =============
 
 def verify_password(plain_password, hashed_password):
