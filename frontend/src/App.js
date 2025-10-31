@@ -67,84 +67,48 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage setUser={setUser} />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<HomePage />} />
           <Route
             path="/admin"
             element={
-              user?.role === "admin" ? (
-                <AdminDashboard user={user} setUser={setUser} />
-              ) : (
-                <Navigate to="/login" />
-              )
+              <ProtectedRoute>
+                {user?.role === "admin" ? (
+                  <AdminDashboard user={user} setUser={setUser} />
+                ) : (
+                  <Navigate to="/login" />
+                )}
+              </ProtectedRoute>
             }
           />
           <Route
             path="/admin/fixture/:fixtureId"
             element={
-              user?.role === "admin" ? (
-                <AdminFixtureEdit user={user} setUser={setUser} />
-              ) : (
-                <Navigate to="/login" />
-              )
+              <ProtectedRoute>
+                {user?.role === "admin" ? (
+                  <AdminFixtureEdit user={user} setUser={setUser} />
+                ) : (
+                  <Navigate to="/login" />
+                )}
+              </ProtectedRoute>
             }
           />
           <Route
             path="/team"
             element={
-              user?.role === "team" ? (
-                <TeamDashboard user={user} setUser={setUser} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/fixtures"
-            element={
               <ProtectedRoute>
-                <FixturesPage />
+                {user?.role === "team" ? (
+                  <TeamDashboard user={user} setUser={setUser} />
+                ) : (
+                  <Navigate to="/login" />
+                )}
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/standings"
-            element={
-              <ProtectedRoute>
-                <StandingsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/top-scorers"
-            element={
-              <ProtectedRoute>
-                <TopScorersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/copa"
-            element={
-              <ProtectedRoute>
-                <CopaPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/sanctions"
-            element={
-              <ProtectedRoute>
-                <SanctionsPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/fixtures" element={<FixturesPage />} />
+          <Route path="/standings" element={<StandingsPage />} />
+          <Route path="/top-scorers" element={<TopScorersPage />} />
+          <Route path="/copa" element={<CopaPage />} />
+          <Route path="/sanctions" element={<SanctionsPage />} />
         </Routes>
       </BrowserRouter>
       <Toaster />
