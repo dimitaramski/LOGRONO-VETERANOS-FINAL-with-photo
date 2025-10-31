@@ -93,14 +93,32 @@ const AdminDashboard = ({ user, setUser }) => {
   const handleCreateTeam = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/teams", teamForm);
-      toast.success("Team created successfully");
+      if (editingTeam) {
+        // Update existing team
+        await api.put(`/teams/${editingTeam.id}`, teamForm);
+        toast.success("Team updated successfully");
+      } else {
+        // Create new team
+        await api.post("/teams", teamForm);
+        toast.success("Team created successfully");
+      }
       setShowTeamModal(false);
-      setTeamForm({ name: "", division: 1 });
+      setTeamForm({ name: "", division: 1, logo_url: "" });
+      setEditingTeam(null);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to create team");
+      toast.error(error.response?.data?.detail || "Failed to save team");
     }
+  };
+
+  const handleEditTeam = (team) => {
+    setEditingTeam(team);
+    setTeamForm({ 
+      name: team.name, 
+      division: team.division,
+      logo_url: team.logo_url || ""
+    });
+    setShowTeamModal(true);
   };
 
   const handleCreatePlayer = async (e) => {
