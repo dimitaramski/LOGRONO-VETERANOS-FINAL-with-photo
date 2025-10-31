@@ -190,6 +190,7 @@ async def populate_database():
     await db.teams.delete_many({})
     await db.fixtures.delete_many({})
     await db.players.delete_many({})
+    await db.standings.delete_many({})
     
     # Create all teams
     print("\n👥 Creating teams...")
@@ -207,6 +208,25 @@ async def populate_database():
         await db.teams.insert_one(team)
         team_mapping[team_data["name"]] = team_id
         print(f"   ✓ Created {team_data['name']} (Division {team_data['division']})")
+    
+    # Create standings for all teams
+    print("\n📊 Creating standings...")
+    for team_data in all_teams:
+        team_id = team_mapping[team_data["name"]]
+        standing = {
+            "id": str(uuid.uuid4()),
+            "team_id": team_id,
+            "division": team_data["division"],
+            "played": team_data.get("pj", 0),
+            "won": team_data.get("pg", 0),
+            "drawn": team_data.get("pe", 0),
+            "lost": team_data.get("pp", 0),
+            "goals_for": team_data.get("gf", 0),
+            "goals_against": team_data.get("gc", 0),
+            "points": team_data.get("pts", 0)
+        }
+        await db.standings.insert_one(standing)
+        print(f"   ✓ Standing for {team_data['name']}: {team_data.get('pts', 0)} pts")
     
     # Create fixtures for Division 1
     print("\n⚽ Creating Division 1 fixtures...")
@@ -232,7 +252,9 @@ async def populate_database():
             "updated_at": datetime.now()
         }
         await db.fixtures.insert_one(fixture)
-        print(f"   ✓ Week {fixture_data['week']}: {fixture_data['home']} vs {fixture_data['away']}")
+        status_emoji = "✅" if fixture["status"] == "completed" else "📅"
+        score_text = f"{fixture_data.get('home_score', '-')} - {fixture_data.get('away_score', '-')}" if fixture["status"] == "completed" else "Not played yet"
+        print(f"   {status_emoji} Jornada {fixture_data['week']}: {fixture_data['home']} vs {fixture_data['away']} ({score_text})")
     
     # Create fixtures for Division 2
     print("\n⚽ Creating Division 2 fixtures...")
@@ -258,11 +280,18 @@ async def populate_database():
             "updated_at": datetime.now()
         }
         await db.fixtures.insert_one(fixture)
-        print(f"   ✓ Week {fixture_data['week']}: {fixture_data['home']} vs {fixture_data['away']}")
+        status_emoji = "✅" if fixture["status"] == "completed" else "📅"
+        score_text = f"{fixture_data.get('home_score', '-')} - {fixture_data.get('away_score', '-')}" if fixture["status"] == "completed" else "Not played yet"
+        print(f"   {status_emoji} Jornada {fixture_data['week']}: {fixture_data['home']} vs {fixture_data['away']} ({score_text})")
     
     print("\n✅ Database population complete!")
     print(f"   📊 Total teams created: {len(all_teams)}")
+    print(f"   📈 Total standings entries: {len(all_teams)}")
     print(f"   📅 Total fixtures created: {len(division_1_fixtures) + len(division_2_fixtures)}")
+    print(f"   ✅ Completed fixtures (Division 1): {sum(1 for f in division_1_fixtures if f.get('home_score') is not None)}")
+    print(f"   ✅ Completed fixtures (Division 2): {sum(1 for f in division_2_fixtures if f.get('home_score') is not None)}")
+    print(f"   📅 Scheduled fixtures (Division 1): {sum(1 for f in division_1_fixtures if f.get('home_score') is None)}")
+    print(f"   📅 Scheduled fixtures (Division 2): {sum(1 for f in division_2_fixtures if f.get('home_score') is None)}")
     print("\n🎉 Liga Veteranos Logroño data is ready!")
 
 if __name__ == "__main__":
