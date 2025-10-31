@@ -78,11 +78,38 @@ const AdminDashboard = ({ user, setUser }) => {
         ]);
         setUsers(usersRes.data);
         setTeams(teamsRes.data);
+      } else if (activeTab === "instagram") {
+        const res = await api.get("/instagram-posts");
+        setInstagramPosts(res.data);
       }
     } catch (error) {
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateInstagramPost = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/instagram-posts", instagramForm);
+      toast.success("Instagram post added successfully");
+      setShowInstagramModal(false);
+      setInstagramForm({ instagram_url: "", description: "" });
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to add post");
+    }
+  };
+
+  const handleDeleteInstagramPost = async (postId) => {
+    if (!window.confirm("Delete this post?")) return;
+    try {
+      await api.delete(`/instagram-posts/${postId}`);
+      toast.success("Post deleted successfully");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to delete post");
     }
   };
 
