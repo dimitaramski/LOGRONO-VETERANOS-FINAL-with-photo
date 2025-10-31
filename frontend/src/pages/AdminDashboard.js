@@ -110,6 +110,17 @@ const AdminDashboard = ({ user, setUser }) => {
       } else if (activeTab === "instagram") {
         const res = await api.get("/instagram-posts");
         setInstagramPosts(res.data);
+      } else if (activeTab === "copa") {
+        const [groupsRes, fixturesRes, bracketsRes, teamsRes] = await Promise.all([
+          api.get("/copa/groups"),
+          api.get("/copa/fixtures"),
+          api.get("/copa/brackets"),
+          api.get("/teams"),
+        ]);
+        setCopaGroups(groupsRes.data);
+        setCopaFixtures(fixturesRes.data);
+        setCopaBrackets(bracketsRes.data);
+        setTeams(teamsRes.data);
       }
     } catch (error) {
       toast.error("Failed to load data");
