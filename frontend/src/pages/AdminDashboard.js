@@ -53,6 +53,29 @@ const AdminDashboard = ({ user, setUser }) => {
   const [instagramForm, setInstagramForm] = useState({ instagram_url: "", description: "" });
   const [instagramPosts, setInstagramPosts] = useState([]);
 
+  // Copa states
+  const [copaGroups, setCopaGroups] = useState([]);
+  const [copaFixtures, setCopaFixtures] = useState([]);
+  const [copaBrackets, setCopaBrackets] = useState([]);
+  const [showCopaGroupModal, setShowCopaGroupModal] = useState(false);
+  const [showCopaFixtureModal, setShowCopaFixtureModal] = useState(false);
+  const [showCopaBracketModal, setShowCopaBracketModal] = useState(false);
+  const [copaGroupForm, setCopaGroupForm] = useState({ group_name: "A", team_ids: [] });
+  const [copaFixtureForm, setCopaFixtureForm] = useState({
+    group_name: "A",
+    jornada: 1,
+    home_team_id: "",
+    away_team_id: "",
+    match_date: "",
+  });
+  const [copaBracketForm, setCopaBracketForm] = useState({
+    round_type: "round_of_16",
+    match_position: 1,
+    home_team_id: "",
+    away_team_id: "",
+    match_date: "",
+  });
+
   useEffect(() => {
     fetchData();
   }, [activeTab]);
