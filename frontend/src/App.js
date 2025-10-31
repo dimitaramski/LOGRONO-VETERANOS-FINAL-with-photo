@@ -5,6 +5,7 @@ import axios from "axios";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminFixtureEdit from "./pages/AdminFixtureEdit";
 import TeamDashboard from "./pages/TeamDashboard";
 import FixturesPage from "./pages/FixturesPage";
 import StandingsPage from "./pages/StandingsPage";
