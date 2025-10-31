@@ -1217,15 +1217,48 @@ const AdminDashboard = ({ user, setUser }) => {
                           src={logoUrl}
                           alt="League Logo"
                           style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}
-                          className="object-contain"
+                          className={`object-cover ${logoCircleMode ? 'rounded-full' : ''}`}
                           onError={(e) => {
                             e.target.src = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
                           }}
                         />
                       </div>
                       <p className="text-xs text-[#b5b5b5] mt-2 text-center">
-                        {t('admin.currentSize', 'Current size')}: {logoWidth}px × {logoHeight}px
+                        {t('admin.currentSize', 'Current size')}: {logoWidth}px × {logoHeight}px {logoCircleMode ? '(Circle)' : '(Square)'}
                       </p>
+                    </div>
+
+                    {/* Circle Mode Toggle */}
+                    <div>
+                      <Label className="text-[#e5e5e5] mb-2 block">
+                        {t('admin.logoShape', 'Logo Shape')}
+                      </Label>
+                      <div className="flex gap-4">
+                        <Button
+                          variant={logoCircleMode ? 'default' : 'outline'}
+                          className={logoCircleMode ? 'bg-[#f4c542] text-[#0f0f10]' : 'border-[#f4c542]/30 text-[#e5e5e5]'}
+                          onClick={() => {
+                            setLogoCircleMode(true);
+                            localStorage.setItem('logoCircleMode', 'true');
+                            toast.success(t('admin.logoShapeUpdated', 'Logo shape updated to circle'));
+                            window.location.reload();
+                          }}
+                        >
+                          ⭕ {t('admin.circle', 'Circle')}
+                        </Button>
+                        <Button
+                          variant={!logoCircleMode ? 'default' : 'outline'}
+                          className={!logoCircleMode ? 'bg-[#f4c542] text-[#0f0f10]' : 'border-[#f4c542]/30 text-[#e5e5e5]'}
+                          onClick={() => {
+                            setLogoCircleMode(false);
+                            localStorage.setItem('logoCircleMode', 'false');
+                            toast.success(t('admin.logoShapeUpdated', 'Logo shape updated to square'));
+                            window.location.reload();
+                          }}
+                        >
+                          ⬜ {t('admin.square', 'Square')}
+                        </Button>
+                      </div>
                     </div>
 
                     {/* Logo Size Controls */}
