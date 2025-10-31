@@ -402,33 +402,79 @@ const AdminDashboard = ({ user, setUser }) => {
                   {loading ? (
                     <div className="text-center text-[#f4c542]">Loading...</div>
                   ) : (
-                    <div className="space-y-4">
-                      {players.map((player) => (
-                        <div
-                          key={player.id}
-                          className="flex justify-between items-center p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
-                          data-testid={`player-item-${player.id}`}
-                        >
-                          <div>
-                            <p className="text-[#e5e5e5] font-semibold" data-testid={`player-name-${player.id}`}>
-                              {player.name} {player.jersey_number && `#${player.jersey_number}`}
-                            </p>
-                            <p className="text-sm text-[#b5b5b5]" data-testid={`player-team-${player.id}`}>{getTeamName(player.team_id)}</p>
-                            <p className="text-sm text-[#f4c542]" data-testid={`player-goals-${player.id}`}>
-                              ⚽ Goals: {player.goals_scored} | 🟨 Yellow: {player.yellow_cards || 0} | 🟥 Red: {player.red_cards || 0}
-                            </p>
-                          </div>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeletePlayer(player.id)}
-                            data-testid={`delete-player-${player.id}`}
+                    <Accordion type="multiple" className="w-full space-y-2">
+                      {teams.map((team) => {
+                        const teamPlayers = players.filter(p => p.team_id === team.id);
+                        return (
+                          <AccordionItem
+                            key={team.id}
+                            value={team.id}
+                            className="border border-[#f4c542]/20 rounded-lg bg-[#0f0f10]/30 overflow-hidden"
+                            data-testid={`team-folder-${team.id}`}
                           >
-                            Delete
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
+                            <AccordionTrigger className="px-4 hover:no-underline hover:bg-[#f4c542]/5">
+                              <div className="flex items-center gap-4 w-full">
+                                {team.logo_url && (
+                                  <img 
+                                    src={team.logo_url} 
+                                    alt={`${team.name} logo`}
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-[#f4c542]/20"
+                                    data-testid={`team-folder-logo-${team.id}`}
+                                  />
+                                )}
+                                <div className="flex-1 text-left">
+                                  <p className="text-[#e5e5e5] font-semibold text-base" data-testid={`team-folder-name-${team.id}`}>
+                                    {team.name}
+                                  </p>
+                                  <p className="text-sm text-[#b5b5b5]" data-testid={`team-folder-info-${team.id}`}>
+                                    Division {team.division} • {teamPlayers.length} player{teamPlayers.length !== 1 ? 's' : ''}
+                                  </p>
+                                </div>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-4">
+                              <div className="space-y-3 mt-2">
+                                {teamPlayers.length === 0 ? (
+                                  <p className="text-center text-[#b5b5b5] py-4" data-testid={`no-players-${team.id}`}>
+                                    No players in this team yet
+                                  </p>
+                                ) : (
+                                  teamPlayers.map((player) => (
+                                    <div
+                                      key={player.id}
+                                      className="flex justify-between items-center p-3 bg-[#1a1a1b]/50 rounded-lg border border-[#f4c542]/10"
+                                      data-testid={`player-item-${player.id}`}
+                                    >
+                                      <div>
+                                        <p className="text-[#e5e5e5] font-semibold" data-testid={`player-name-${player.id}`}>
+                                          {player.name} {player.jersey_number && `#${player.jersey_number}`}
+                                        </p>
+                                        <p className="text-sm text-[#f4c542]" data-testid={`player-goals-${player.id}`}>
+                                          ⚽ Goals: {player.goals_scored} | 🟨 Yellow: {player.yellow_cards || 0} | 🟥 Red: {player.red_cards || 0}
+                                        </p>
+                                      </div>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => handleDeletePlayer(player.id)}
+                                        data-testid={`delete-player-${player.id}`}
+                                      >
+                                        Delete
+                                      </Button>
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        );
+                      })}
+                      {teams.length === 0 && (
+                        <p className="text-center text-[#b5b5b5] py-8" data-testid="no-teams">
+                          No teams available. Please create teams first.
+                        </p>
+                      )}
+                    </Accordion>
                   )}
                 </CardContent>
               </Card>
