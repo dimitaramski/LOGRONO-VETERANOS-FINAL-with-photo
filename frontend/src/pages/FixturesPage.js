@@ -214,11 +214,23 @@ const FixturesPage = () => {
                 .map((weekNum) => (
                   <Card key={weekNum} className="glass-card border-[#f4c542]/20" data-testid={`week-${weekNum}-card`}>
                     <CardHeader>
-                      <CardTitle className="text-2xl text-[#f4c542]">
+                      <CardTitle className="text-2xl text-[#f4c542] flex items-center gap-2">
                         Week {weekNum}
+                        {parseInt(weekNum) <= 11 && (
+                          <span className="text-sm text-[#b5b5b5] font-normal">(First Half)</span>
+                        )}
+                        {parseInt(weekNum) > 11 && (
+                          <span className="text-sm text-[#b5b5b5] font-normal">(Second Half)</span>
+                        )}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
+                      {weeks[weekNum].length === 0 ? (
+                        <div className="text-center py-8 text-[#b5b5b5]" data-testid={`no-matches-week-${weekNum}`}>
+                          <p className="text-lg mb-2">📅 No matches scheduled yet</p>
+                          <p className="text-sm">Check back later for fixture updates</p>
+                        </div>
+                      ) : (
                       <div className="space-y-4">
                         {weeks[weekNum].map((fixture) => {
                           const status = getMatchStatus(fixture);
