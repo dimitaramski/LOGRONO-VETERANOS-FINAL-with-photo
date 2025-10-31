@@ -208,13 +208,14 @@ const AdminDashboard = ({ user, setUser }) => {
   };
 
   const handleDeleteTeam = async (teamId) => {
-    if (!window.confirm("Are you sure you want to delete this team?")) return;
+    if (!window.confirm("Are you sure you want to delete this team? This will affect all associated data.")) return;
     try {
       await api.delete(`/teams/${teamId}`);
       toast.success("Team deleted successfully");
       fetchData();
     } catch (error) {
-      toast.error("Failed to delete team");
+      console.error("Delete team error:", error);
+      toast.error(error.response?.data?.detail || "Failed to delete team. It may have associated players or fixtures.");
     }
   };
 
@@ -225,7 +226,8 @@ const AdminDashboard = ({ user, setUser }) => {
       toast.success("Player deleted successfully");
       fetchData();
     } catch (error) {
-      toast.error("Failed to delete player");
+      console.error("Delete player error:", error);
+      toast.error(error.response?.data?.detail || "Failed to delete player. Please try again.");
     }
   };
 
