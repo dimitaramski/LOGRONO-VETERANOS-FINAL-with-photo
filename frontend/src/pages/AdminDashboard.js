@@ -498,6 +498,65 @@ const AdminDashboard = ({ user, setUser }) => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Instagram Tab */}
+            <TabsContent value="instagram">
+              <Card className="glass-card border-[#f4c542]/20">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-2xl text-[#f4c542]">Instagram Posts</CardTitle>
+                    <Button className="btn-primary" onClick={() => setShowInstagramModal(true)} data-testid="add-instagram-btn">
+                      + Add Post
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {loading ? (
+                    <div className="text-center text-[#f4c542]">Loading...</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {instagramPosts.map((post) => (
+                        <div
+                          key={post.id}
+                          className="p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10 flex justify-between items-start"
+                          data-testid={`instagram-item-${post.id}`}
+                        >
+                          <div className="flex-1">
+                            <a 
+                              href={post.instagram_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[#f4c542] hover:text-[#ffd700] break-all"
+                              data-testid={`instagram-url-${post.id}`}
+                            >
+                              {post.instagram_url}
+                            </a>
+                            {post.description && (
+                              <p className="text-[#b5b5b5] text-sm mt-2" data-testid={`instagram-desc-${post.id}`}>
+                                {post.description}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteInstagramPost(post.id)}
+                            data-testid={`delete-instagram-${post.id}`}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      ))}
+                      {instagramPosts.length === 0 && (
+                        <p className="text-center text-[#b5b5b5]" data-testid="no-instagram-posts">
+                          No Instagram posts added yet
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
