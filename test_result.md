@@ -130,6 +130,21 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+backend:
+  - task: "Database Population with Liga Veteranos Logroño Data"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE: Database has been populated with generic team names instead of actual Liga Veteranos Logroño teams. Expected teams like 'V.L. PLAK LA MULA', 'S.D. COSMOS', 'BAR CAFÉ BALA' etc. but found generic names like 'FC Logroño Veterans', 'Rioja United'. Only 2 weeks of fixtures exist instead of required 11 for Division 1 and 6 for Division 2. Standings data is mostly empty with only 1 completed match. Database needs complete repopulation with actual league data from the images provided in the requirements."
+
 agent_communication:
   - agent: "main"
     message: "Implemented team folder organization in Players Management section. Used Accordion component from Shadcn UI to create collapsible/expandable folders for each team. Visual testing completed via screenshots showing proper functionality on both desktop and mobile. Ready for user verification."
+  - agent: "testing"
+    message: "CRITICAL DATABASE ISSUE FOUND: The backend API is working correctly, but the database has NOT been populated with the actual Liga Veteranos Logroño league data. Instead of real team names like 'V.L. PLAK LA MULA', 'S.D. COSMOS', 'BAR CAFÉ BALA', the database contains generic placeholder teams. Only 2 weeks of fixtures exist instead of the required 11 for Division 1 and 6 for Division 2. The database needs to be completely repopulated with the actual league data from the provided images. This is a high-priority issue that blocks the application's core functionality."
