@@ -19,11 +19,11 @@ const SharedNavigation = ({ currentPage }) => {
         <div className="flex items-center gap-4">
           <img
             src={logoUrl}
-            alt="Logo"
+            alt="Liga Veteranos Logroño Logo"
             style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}
             className="object-contain"
             onError={(e) => {
-              e.target.src = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
+              e.target.src = "https://customer-assets.emergentagent.com/job_veteran-league/artifacts/4py6oacw_Screenshot%202025-10-31%20at%2017.19.50.png";
             }}
           />
           <h1
