@@ -8,8 +8,10 @@ const SharedNavigation = ({ currentPage }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Get logo from localStorage or use default
+  // Get logo settings from localStorage or use defaults
   const logoUrl = localStorage.getItem('leagueLogo') || "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
+  const logoWidth = parseInt(localStorage.getItem('logoWidth')) || 40;
+  const logoHeight = parseInt(localStorage.getItem('logoHeight')) || 40;
 
   return (
     <nav className="navbar fixed w-full top-0 z-50 px-6 py-4">
@@ -18,7 +20,8 @@ const SharedNavigation = ({ currentPage }) => {
           <img
             src={logoUrl}
             alt="Logo"
-            className="w-10 h-10 object-contain"
+            style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}
+            className="object-contain"
             onError={(e) => {
               e.target.src = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
             }}
