@@ -769,6 +769,207 @@ const AdminDashboard = ({ user, setUser }) => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Copa Tab */}
+            <TabsContent value="copa">
+              <div className="space-y-8">
+                {/* Copa Groups */}
+                <Card className="glass-card border-[#f4c542]/20">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-2xl text-[#f4c542]">Copa Groups</CardTitle>
+                      <Button className="btn-primary" onClick={() => setShowCopaGroupModal(true)} data-testid="add-copa-group-btn">
+                        + Add/Edit Group
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {loading ? (
+                      <div className="text-center text-[#f4c542]">Loading...</div>
+                    ) : (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {["A", "B", "C", "D"].map((groupName) => {
+                          const group = copaGroups.find((g) => g.group_name === groupName);
+                          return (
+                            <div
+                              key={groupName}
+                              className="p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
+                              data-testid={`copa-group-${groupName}`}
+                            >
+                              <div className="flex justify-between items-center mb-3">
+                                <h3 className="text-xl font-bold text-[#f4c542]">Group {groupName}</h3>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    className="btn-secondary"
+                                    onClick={() => {
+                                      const existingGroup = copaGroups.find((g) => g.group_name === groupName);
+                                      setCopaGroupForm({
+                                        group_name: groupName,
+                                        team_ids: existingGroup?.team_ids || [],
+                                      });
+                                      setShowCopaGroupModal(true);
+                                    }}
+                                    data-testid={`edit-copa-group-${groupName}`}
+                                  >
+                                    Edit
+                                  </Button>
+                                  {group && (
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      onClick={() => handleDeleteCopaGroup(groupName)}
+                                      data-testid={`delete-copa-group-${groupName}`}
+                                    >
+                                      Delete
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                              {group && group.team_ids.length > 0 ? (
+                                <div className="space-y-2">
+                                  {group.team_ids.map((teamId) => (
+                                    <div key={teamId} className="text-[#e5e5e5] text-sm">
+                                      • {getTeamName(teamId)}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="text-[#b5b5b5] text-sm">No teams assigned yet</p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Copa Fixtures */}
+                <Card className="glass-card border-[#f4c542]/20">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-2xl text-[#f4c542]">Copa Fixtures</CardTitle>
+                      <Button className="btn-primary" onClick={() => setShowCopaFixtureModal(true)} data-testid="add-copa-fixture-btn">
+                        + Add Fixture
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {loading ? (
+                      <div className="text-center text-[#f4c542]">Loading...</div>
+                    ) : (
+                      <div className="space-y-4">
+                        {copaFixtures.map((fixture) => (
+                          <div
+                            key={fixture.id}
+                            className="p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
+                            data-testid={`copa-fixture-item-${fixture.id}`}
+                          >
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-[#e5e5e5] font-semibold">
+                                  {getTeamName(fixture.home_team_id)} vs {getTeamName(fixture.away_team_id)}
+                                </p>
+                                <p className="text-sm text-[#b5b5b5]">
+                                  Group {fixture.group_name} • Jornada {fixture.jornada}
+                                </p>
+                                {fixture.status === "completed" && (
+                                  <p className="text-[#f4c542] font-bold">
+                                    Score: {fixture.home_score} - {fixture.away_score}
+                                  </p>
+                                )}
+                              </div>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeleteCopaFixture(fixture.id)}
+                                data-testid={`delete-copa-fixture-${fixture.id}`}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                        {copaFixtures.length === 0 && (
+                          <p className="text-center text-[#b5b5b5]">No Copa fixtures added yet</p>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Copa Brackets */}
+                <Card className="glass-card border-[#f4c542]/20">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-2xl text-[#f4c542]">Knockout Brackets</CardTitle>
+                      <Button className="btn-primary" onClick={() => setShowCopaBracketModal(true)} data-testid="add-copa-bracket-btn">
+                        + Add Bracket Match
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {loading ? (
+                      <div className="text-center text-[#f4c542]">Loading...</div>
+                    ) : (
+                      <div className="space-y-6">
+                        {["round_of_16", "quarter_final", "semi_final", "final"].map((roundType) => {
+                          const roundBrackets = copaBrackets.filter((b) => b.round_type === roundType);
+                          const roundLabel = {
+                            round_of_16: "Round of 16",
+                            quarter_final: "Quarter Finals",
+                            semi_final: "Semi Finals",
+                            final: "Final",
+                          }[roundType];
+
+                          return (
+                            <div key={roundType}>
+                              <h3 className="text-lg font-bold text-[#f4c542] mb-3">{roundLabel}</h3>
+                              {roundBrackets.length > 0 ? (
+                                <div className="space-y-3">
+                                  {roundBrackets.map((bracket) => (
+                                    <div
+                                      key={bracket.id}
+                                      className="p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
+                                      data-testid={`copa-bracket-${bracket.id}`}
+                                    >
+                                      <div className="flex justify-between items-center">
+                                        <div>
+                                          <p className="text-[#e5e5e5]">
+                                            {bracket.home_team_id ? getTeamName(bracket.home_team_id) : "TBD"} vs{" "}
+                                            {bracket.away_team_id ? getTeamName(bracket.away_team_id) : "TBD"}
+                                          </p>
+                                          {bracket.status === "completed" && (
+                                            <p className="text-[#f4c542] text-sm">
+                                              Score: {bracket.home_score} - {bracket.away_score}
+                                            </p>
+                                          )}
+                                        </div>
+                                        <Button
+                                          variant="destructive"
+                                          size="sm"
+                                          onClick={() => handleDeleteCopaBracket(bracket.id)}
+                                          data-testid={`delete-copa-bracket-${bracket.id}`}
+                                        >
+                                          Delete
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="text-[#b5b5b5] text-sm">No {roundLabel.toLowerCase()} matches added yet</p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
