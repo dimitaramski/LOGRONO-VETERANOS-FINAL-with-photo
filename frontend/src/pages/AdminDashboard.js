@@ -1304,6 +1304,278 @@ const AdminDashboard = ({ user, setUser }) => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Copa Group Modal */}
+      <Dialog open={showCopaGroupModal} onOpenChange={setShowCopaGroupModal}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">
+              Manage Copa Group {copaGroupForm.group_name}
+            </DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const existingGroup = copaGroups.find((g) => g.group_name === copaGroupForm.group_name);
+              if (existingGroup) {
+                handleUpdateCopaGroup(copaGroupForm.group_name);
+              } else {
+                handleCreateCopaGroup(e);
+              }
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <Label className="text-[#e5e5e5]">Group Name</Label>
+              <Select
+                value={copaGroupForm.group_name}
+                onValueChange={(v) => {
+                  const existingGroup = copaGroups.find((g) => g.group_name === v);
+                  setCopaGroupForm({
+                    group_name: v,
+                    team_ids: existingGroup?.team_ids || [],
+                  });
+                }}
+              >
+                <SelectTrigger className="input-field" data-testid="copa-group-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  <SelectItem value="A">Group A</SelectItem>
+                  <SelectItem value="B">Group B</SelectItem>
+                  <SelectItem value="C">Group C</SelectItem>
+                  <SelectItem value="D">Group D</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5] mb-2 block">Select Teams (Select 6 teams)</Label>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto p-2 border border-[#f4c542]/20 rounded">
+                {teams.map((team) => (
+                  <div key={team.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id={`team-${team.id}`}
+                      checked={copaGroupForm.team_ids.includes(team.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setCopaGroupForm({
+                            ...copaGroupForm,
+                            team_ids: [...copaGroupForm.team_ids, team.id],
+                          });
+                        } else {
+                          setCopaGroupForm({
+                            ...copaGroupForm,
+                            team_ids: copaGroupForm.team_ids.filter((id) => id !== team.id),
+                          });
+                        }
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <label htmlFor={`team-${team.id}`} className="text-[#e5e5e5] cursor-pointer">
+                      {team.name} (Division {team.division})
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-[#b5b5b5] mt-2">
+                Selected: {copaGroupForm.team_ids.length} / 6 teams
+              </p>
+            </div>
+            <Button type="submit" className="btn-primary w-full" data-testid="save-copa-group-btn">
+              Save Group
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Copa Fixture Modal */}
+      <Dialog open={showCopaFixtureModal} onOpenChange={setShowCopaFixtureModal}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">Add Copa Fixture</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateCopaFixture} className="space-y-4">
+            <div>
+              <Label className="text-[#e5e5e5]">Group</Label>
+              <Select
+                value={copaFixtureForm.group_name}
+                onValueChange={(v) => setCopaFixtureForm({ ...copaFixtureForm, group_name: v })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  <SelectItem value="A">Group A</SelectItem>
+                  <SelectItem value="B">Group B</SelectItem>
+                  <SelectItem value="C">Group C</SelectItem>
+                  <SelectItem value="D">Group D</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Jornada</Label>
+              <Select
+                value={copaFixtureForm.jornada.toString()}
+                onValueChange={(v) => setCopaFixtureForm({ ...copaFixtureForm, jornada: parseInt(v) })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  {[1, 2, 3, 4, 5].map((j) => (
+                    <SelectItem key={j} value={j.toString()}>
+                      Jornada {j}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Home Team</Label>
+              <Select
+                value={copaFixtureForm.home_team_id}
+                onValueChange={(v) => setCopaFixtureForm({ ...copaFixtureForm, home_team_id: v })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue placeholder="Select home team" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Away Team</Label>
+              <Select
+                value={copaFixtureForm.away_team_id}
+                onValueChange={(v) => setCopaFixtureForm({ ...copaFixtureForm, away_team_id: v })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue placeholder="Select away team" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Match Date</Label>
+              <Input
+                type="datetime-local"
+                value={copaFixtureForm.match_date}
+                onChange={(e) => setCopaFixtureForm({ ...copaFixtureForm, match_date: e.target.value })}
+                required
+                className="input-field"
+              />
+            </div>
+            <Button type="submit" className="btn-primary w-full">
+              Create Fixture
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Copa Bracket Modal */}
+      <Dialog open={showCopaBracketModal} onOpenChange={setShowCopaBracketModal}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">Add Knockout Bracket Match</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateCopaBracket} className="space-y-4">
+            <div>
+              <Label className="text-[#e5e5e5]">Round Type</Label>
+              <Select
+                value={copaBracketForm.round_type}
+                onValueChange={(v) => setCopaBracketForm({ ...copaBracketForm, round_type: v })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  <SelectItem value="round_of_16">Round of 16</SelectItem>
+                  <SelectItem value="quarter_final">Quarter Final</SelectItem>
+                  <SelectItem value="semi_final">Semi Final</SelectItem>
+                  <SelectItem value="final">Final</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Match Position</Label>
+              <Input
+                type="number"
+                value={copaBracketForm.match_position}
+                onChange={(e) => setCopaBracketForm({ ...copaBracketForm, match_position: parseInt(e.target.value) })}
+                required
+                min="1"
+                className="input-field"
+                placeholder="1, 2, 3..."
+              />
+              <p className="text-xs text-[#b5b5b5] mt-1">
+                Position in the bracket (1-8 for R16, 1-4 for QF, 1-2 for SF, 1 for Final)
+              </p>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Home Team (Optional)</Label>
+              <Select
+                value={copaBracketForm.home_team_id}
+                onValueChange={(v) => setCopaBracketForm({ ...copaBracketForm, home_team_id: v })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue placeholder="Select home team or leave as TBD" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  <SelectItem value="">TBD</SelectItem>
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Away Team (Optional)</Label>
+              <Select
+                value={copaBracketForm.away_team_id}
+                onValueChange={(v) => setCopaBracketForm({ ...copaBracketForm, away_team_id: v })}
+              >
+                <SelectTrigger className="input-field">
+                  <SelectValue placeholder="Select away team or leave as TBD" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
+                  <SelectItem value="">TBD</SelectItem>
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Match Date (Optional)</Label>
+              <Input
+                type="datetime-local"
+                value={copaBracketForm.match_date}
+                onChange={(e) => setCopaBracketForm({ ...copaBracketForm, match_date: e.target.value })}
+                className="input-field"
+              />
+            </div>
+            <Button type="submit" className="btn-primary w-full">
+              Create Bracket Match
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
