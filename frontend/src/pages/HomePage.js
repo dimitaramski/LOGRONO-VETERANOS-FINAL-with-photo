@@ -335,6 +335,58 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Copa del Veteranos Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+              <span className="text-gradient">{t('copa.title', 'Copa del Veteranos')}</span>
+            </h2>
+            <p className="text-[#b5b5b5] text-lg max-w-3xl mx-auto">
+              {t('copa.description', 'Tournament competition featuring teams from both divisions competing for the cup')}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div 
+              className="glass-card p-8 cursor-pointer transform hover:scale-105 transition-all duration-300" 
+              onClick={() => navigate("/copa?tab=standings")}
+              data-testid="copa-standings-card"
+            >
+              <div className="text-5xl mb-4">🏅</div>
+              <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">{t('copa.groupStandings', 'Group Standings')}</h3>
+              <p className="text-[#b5b5b5] mb-4">
+                {t('copa.groupStandingsDesc', 'View standings for all four groups (A, B, C, D) and track which teams qualify for knockouts')}
+              </p>
+              <Button
+                className="btn-secondary"
+                onClick={(e) => { e.stopPropagation(); navigate("/copa?tab=standings"); }}
+                data-testid="copa-view-standings-btn"
+              >
+                {t('viewStandings')}
+              </Button>
+            </div>
+            <div 
+              className="glass-card p-8 cursor-pointer transform hover:scale-105 transition-all duration-300" 
+              onClick={() => navigate("/copa?tab=fixtures")}
+              data-testid="copa-fixtures-card"
+            >
+              <div className="text-5xl mb-4">⚽</div>
+              <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">{t('copa.fixturesAndBrackets', 'Fixtures & Brackets')}</h3>
+              <p className="text-[#b5b5b5] mb-4">
+                {t('copa.fixturesDesc', 'Follow group stage matches and knockout brackets from Round of 16 to the Final')}
+              </p>
+              <Button
+                className="btn-secondary"
+                onClick={(e) => { e.stopPropagation(); navigate("/copa?tab=fixtures"); }}
+                data-testid="copa-view-fixtures-btn"
+              >
+                {t('viewFixtures')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Instagram Blog Section */}
       {instagramPosts.length > 0 && (
         <section className="py-20 px-6">
