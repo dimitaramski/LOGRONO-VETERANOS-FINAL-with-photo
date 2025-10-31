@@ -294,6 +294,13 @@ const AdminDashboard = ({ user, setUser }) => {
               >
                 Users
               </TabsTrigger>
+              <TabsTrigger
+                value="instagram"
+                className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
+                data-testid="instagram-tab"
+              >
+                Instagram
+              </TabsTrigger>
             </TabsList>
 
             {/* Teams Tab */}
