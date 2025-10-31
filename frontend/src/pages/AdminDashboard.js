@@ -103,116 +103,34 @@ const AdminDashboard = ({ user, setUser }) => {
   };
 
   const handleDeleteInstagramPost = async (postId) => {
-    if (!window.confirm("Are you sure you want to delete this Instagram post?")) return;
+    console.log("Delete clicked for post:", postId);
+    if (!window.confirm("Are you sure you want to delete this Instagram post?")) {
+      console.log("Delete cancelled by user");
+      return;
+    }
+    console.log("Proceeding with delete...");
     try {
-      await api.delete(`/instagram-posts/${postId}`);
+      const response = await api.delete(`/instagram-posts/${postId}`);
+      console.log("Delete response:", response);
       toast.success("Instagram post deleted successfully");
-      fetchData();
+      await fetchData();
     } catch (error) {
       console.error("Delete error:", error);
+      console.error("Error response:", error.response);
       toast.error(error.response?.data?.detail || "Failed to delete Instagram post. Please try again.");
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    navigate("/");
-    toast.success("Logged out successfully");
-  };
-
-  const handleCreateTeam = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingTeam) {
-        // Update existing team
-        await api.put(`/teams/${editingTeam.id}`, teamForm);
-        toast.success("Team updated successfully");
-      } else {
-        // Create new team
-        await api.post("/teams", teamForm);
-        toast.success("Team created successfully");
-      }
-      setShowTeamModal(false);
-      setTeamForm({ name: "", division: 1, logo_url: "" });
-      setEditingTeam(null);
-      fetchData();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to save team");
-    }
-  };
-
-  const handleEditTeam = (team) => {
-    setEditingTeam(team);
-    setTeamForm({ 
-      name: team.name, 
-      division: team.division,
-      logo_url: team.logo_url || ""
-    });
-    setShowTeamModal(true);
-  };
-
-  const handleCreatePlayer = async (e) => {
-    e.preventDefault();
-    try {
-      const data = { ...playerForm };
-      if (data.jersey_number) {
-        data.jersey_number = parseInt(data.jersey_number);
-      } else {
-        delete data.jersey_number;
-      }
-      await api.post("/players", data);
-      toast.success("Player created successfully");
-      setShowPlayerModal(false);
-      setPlayerForm({ name: "", team_id: "", jersey_number: "" });
-      fetchData();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to create player");
-    }
-  };
-
-  const handleCreateFixture = async (e) => {
-    e.preventDefault();
-    try {
-      await api.post("/fixtures", fixtureForm);
-      toast.success("Fixture created successfully");
-      setShowFixtureModal(false);
-      setFixtureForm({
-        division: 1,
-        week_number: 1,
-        home_team_id: "",
-        away_team_id: "",
-        match_date: "",
-      });
-      fetchData();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to create fixture");
-    }
-  };
-
-  const handleCreateUser = async (e) => {
-    e.preventDefault();
-    try {
-      const data = { ...userForm };
-      if (!data.team_id) {
-        delete data.team_id;
-      }
-      await api.post("/auth/register", data);
-      toast.success("User created successfully");
-      setShowUserModal(false);
-      setUserForm({ username: "", password: "", role: "team", team_id: "" });
-      fetchData();
-    } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to create user");
-    }
-  };
-
   const handleDeleteTeam = async (teamId) => {
-    if (!window.confirm("Are you sure you want to delete this team? This will affect all associated data.")) return;
+    console.log("Delete team clicked:", teamId);
+    if (!window.confirm("Are you sure you want to delete this team? This will affect all associated data.")) {
+      return;
+    }
     try {
-      await api.delete(`/teams/${teamId}`);
+      const response = await api.delete(`/teams/${teamId}`);
+      console.log("Team delete response:", response);
       toast.success("Team deleted successfully");
-      fetchData();
+      await fetchData();
     } catch (error) {
       console.error("Delete team error:", error);
       toast.error(error.response?.data?.detail || "Failed to delete team. It may have associated players or fixtures.");
@@ -220,11 +138,15 @@ const AdminDashboard = ({ user, setUser }) => {
   };
 
   const handleDeletePlayer = async (playerId) => {
-    if (!window.confirm("Are you sure you want to delete this player?")) return;
+    console.log("Delete player clicked:", playerId);
+    if (!window.confirm("Are you sure you want to delete this player?")) {
+      return;
+    }
     try {
-      await api.delete(`/players/${playerId}`);
+      const response = await api.delete(`/players/${playerId}`);
+      console.log("Player delete response:", response);
       toast.success("Player deleted successfully");
-      fetchData();
+      await fetchData();
     } catch (error) {
       console.error("Delete player error:", error);
       toast.error(error.response?.data?.detail || "Failed to delete player. Please try again.");
