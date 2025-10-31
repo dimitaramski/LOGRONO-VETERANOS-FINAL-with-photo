@@ -66,10 +66,14 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage setUser={setUser} />} />
           <Route
-            path="/login"
-            element={<LoginPage setUser={setUser} />}
+            path="/"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/admin"
@@ -101,11 +105,46 @@ function App() {
               )
             }
           />
-          <Route path="/fixtures" element={<FixturesPage />} />
-          <Route path="/standings" element={<StandingsPage />} />
-          <Route path="/top-scorers" element={<TopScorersPage />} />
-          <Route path="/copa" element={<CopaPage />} />
-          <Route path="/sanctions" element={<SanctionsPage />} />
+          <Route
+            path="/fixtures"
+            element={
+              <ProtectedRoute>
+                <FixturesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/standings"
+            element={
+              <ProtectedRoute>
+                <StandingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/top-scorers"
+            element={
+              <ProtectedRoute>
+                <TopScorersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/copa"
+            element={
+              <ProtectedRoute>
+                <CopaPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sanctions"
+            element={
+              <ProtectedRoute>
+                <SanctionsPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
       <Toaster />
