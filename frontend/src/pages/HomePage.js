@@ -188,6 +188,14 @@ const HomePage = () => {
               >
                 🏆 {t('topScorers')}
               </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-left text-[#e5e5e5] hover:text-[#f4c542] hover:bg-[#f4c542]/10 justify-start"
+                onClick={() => { navigate("/copa"); setMobileMenuOpen(false); }}
+                data-testid="mobile-copa-btn"
+              >
+                🏅 {t('copa', 'Copa del Veteranos')}
+              </Button>
               
               <div className="border-t border-[#f4c542]/20 my-2 pt-2">
                 <p className="text-[#b5b5b5] text-sm mb-2 px-3">Idioma / Language</p>
