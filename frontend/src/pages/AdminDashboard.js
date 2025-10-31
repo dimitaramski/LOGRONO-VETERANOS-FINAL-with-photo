@@ -1161,6 +1161,84 @@ const AdminDashboard = ({ user, setUser }) => {
                 </Card>
               </div>
             </TabsContent>
+
+            {/* Settings Tab */}
+            <TabsContent value="settings">
+              <Card className="glass-card border-[#f4c542]/20">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-[#f4c542]">
+                    {t('admin.settings', 'Settings')} - {t('admin.logoManagement', 'Logo Management')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Current Logo Preview */}
+                    <div>
+                      <Label className="text-[#e5e5e5] mb-2 block">
+                        {t('admin.currentLogo', 'Current Logo')}
+                      </Label>
+                      <div className="p-6 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10 flex items-center justify-center">
+                        <img
+                          src={logoUrl}
+                          alt="League Logo"
+                          className="w-32 h-32 object-contain"
+                          onError={(e) => {
+                            e.target.src = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Update Logo */}
+                    <div>
+                      <Label className="text-[#e5e5e5] mb-2 block">
+                        {t('admin.updateLogo', 'Update Logo URL')}
+                      </Label>
+                      <div className="flex gap-4">
+                        <Input
+                          value={newLogoUrl}
+                          onChange={(e) => setNewLogoUrl(e.target.value)}
+                          placeholder="https://example.com/logo.png"
+                          className="input-field flex-1"
+                        />
+                        <Button
+                          className="btn-primary"
+                          onClick={() => {
+                            if (newLogoUrl.trim()) {
+                              setLogoUrl(newLogoUrl);
+                              localStorage.setItem('leagueLogo', newLogoUrl);
+                              toast.success(t('admin.logoUpdated', 'Logo updated successfully'));
+                              setNewLogoUrl("");
+                            }
+                          }}
+                        >
+                          {t('admin.update', 'Update')}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-[#b5b5b5] mt-2">
+                        {t('admin.logoUrlDesc', 'Enter the URL of the logo image (PNG, JPG, SVG supported). Recommended size: 200x200px')}
+                      </p>
+                    </div>
+
+                    {/* Reset to Default */}
+                    <div>
+                      <Button
+                        variant="outline"
+                        className="border-[#f4c542]/20 text-[#f4c542] hover:bg-[#f4c542]/10"
+                        onClick={() => {
+                          const defaultLogo = "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
+                          setLogoUrl(defaultLogo);
+                          localStorage.setItem('leagueLogo', defaultLogo);
+                          toast.success(t('admin.logoReset', 'Logo reset to default'));
+                        }}
+                      >
+                        {t('admin.resetToDefault', 'Reset to Default Logo')}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
