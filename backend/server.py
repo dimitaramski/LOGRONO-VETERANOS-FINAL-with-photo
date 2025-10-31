@@ -134,11 +134,27 @@ class FixtureUpdate(BaseModel):
     home_score: Optional[int] = None
     away_score: Optional[int] = None
     status: Optional[str] = None
+    week_number: Optional[int] = None
+    match_date: Optional[str] = None
 
 class AddGoalScorer(BaseModel):
     player_id: str
     team_side: str  # home or away
     minute: Optional[int] = None
+
+class AddCard(BaseModel):
+    player_id: str
+    team_side: str  # home or away
+    card_type: str  # yellow or red
+    minute: Optional[int] = None
+
+class RemoveGoalScorer(BaseModel):
+    goal_id: str
+    team_side: str
+
+class RemoveCard(BaseModel):
+    card_id: str
+    team_side: str
 
 class StandingsRow(BaseModel):
     position: int
