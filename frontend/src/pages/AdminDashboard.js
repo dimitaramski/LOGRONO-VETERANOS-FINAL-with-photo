@@ -94,6 +94,7 @@ const AdminDashboard = ({ user, setUser }) => {
   const [newLogoUrl, setNewLogoUrl] = useState("");
   const [logoWidth, setLogoWidth] = useState(40);
   const [logoHeight, setLogoHeight] = useState(40);
+  const [logoCircleMode, setLogoCircleMode] = useState(true);
 
   useEffect(() => {
     fetchData();
@@ -104,6 +105,7 @@ const AdminDashboard = ({ user, setUser }) => {
     const savedLogo = localStorage.getItem('leagueLogo');
     const savedWidth = localStorage.getItem('logoWidth');
     const savedHeight = localStorage.getItem('logoHeight');
+    const savedCircleMode = localStorage.getItem('logoCircleMode');
     
     if (savedLogo) {
       setLogoUrl(savedLogo);
@@ -113,6 +115,12 @@ const AdminDashboard = ({ user, setUser }) => {
     }
     if (savedHeight) {
       setLogoHeight(parseInt(savedHeight));
+    }
+    if (savedCircleMode !== null) {
+      setLogoCircleMode(savedCircleMode === 'true');
+    } else {
+      // Set default to true (circular)
+      localStorage.setItem('logoCircleMode', 'true');
     }
   }, []);
 
