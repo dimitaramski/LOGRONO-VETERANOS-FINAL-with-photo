@@ -92,6 +92,8 @@ const AdminDashboard = ({ user, setUser }) => {
   // Settings states
   const [logoUrl, setLogoUrl] = useState("https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png");
   const [newLogoUrl, setNewLogoUrl] = useState("");
+  const [logoWidth, setLogoWidth] = useState(40);
+  const [logoHeight, setLogoHeight] = useState(40);
 
   useEffect(() => {
     fetchData();
@@ -100,8 +102,17 @@ const AdminDashboard = ({ user, setUser }) => {
   // Load logo from localStorage on mount
   useEffect(() => {
     const savedLogo = localStorage.getItem('leagueLogo');
+    const savedWidth = localStorage.getItem('logoWidth');
+    const savedHeight = localStorage.getItem('logoHeight');
+    
     if (savedLogo) {
       setLogoUrl(savedLogo);
+    }
+    if (savedWidth) {
+      setLogoWidth(parseInt(savedWidth));
+    }
+    if (savedHeight) {
+      setLogoHeight(parseInt(savedHeight));
     }
   }, []);
 
