@@ -136,10 +136,10 @@ const HomePage = () => {
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
-            Welcome to <span className="text-gradient">Liga Veteranos</span>
+            {t('welcomeTo')} <span className="text-gradient">{t('ligaVeteranos')}</span>
           </h2>
           <p className="text-lg sm:text-xl text-[#b5b5b5] mb-8 max-w-3xl mx-auto">
-            Experience the passion of veteran football in Logroño. Two divisions, 24 teams, one community united by the love of the game.
+            {t('heroText')}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button
@@ -147,14 +147,14 @@ const HomePage = () => {
               onClick={() => setShowSubscribe(true)}
               data-testid="hero-subscribe-btn"
             >
-              Subscribe for €5/Season
+              {t('subscribeFor')}
             </Button>
             <Button
               className="btn-secondary text-base"
               onClick={() => navigate("/standings")}
               data-testid="hero-view-standings-btn"
             >
-              View Standings
+              {t('viewStandings')}
             </Button>
           </div>
         </div>
