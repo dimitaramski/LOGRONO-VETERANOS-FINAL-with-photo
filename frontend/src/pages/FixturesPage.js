@@ -205,30 +205,71 @@ const FixturesPage = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {weeks[weekNum].map((fixture) => (
+                        {weeks[weekNum].map((fixture) => {
+                          const status = getMatchStatus(fixture);
+                          const live = isMatchLive(fixture);
+                          
+                          return (
                           <div
                             key={fixture.id}
-                            className="flex items-center justify-between p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
+                            className="flex items-center justify-between p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10 hover:border-[#f4c542]/30 cursor-pointer transition-all"
+                            onClick={() => {
+                              setSelectedFixture(fixture);
+                              setShowMatchDetails(true);
+                            }}
                             data-testid={`fixture-${fixture.id}`}
                           >
-                            <div className="flex-1 text-right">
+                            <div className="flex-1 flex items-center justify-end gap-3">
                               <p className="text-[#e5e5e5] font-semibold" data-testid={`home-team-${fixture.id}`}>
                                 {teams[fixture.home_team_id]?.name || "Unknown"}
                               </p>
+                              {teams[fixture.home_team_id]?.logo_url && (
+                                <img 
+                                  src={teams[fixture.home_team_id].logo_url} 
+                                  alt={`${teams[fixture.home_team_id].name} logo`}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  data-testid={`home-logo-${fixture.id}`}
+                                />
+                              )}
                             </div>
-                            <div className="px-8 text-center">
-                              {fixture.status === "completed" ? (
-                                <div className="text-2xl font-bold text-[#f4c542]" data-testid={`score-${fixture.id}`}>
-                                  {fixture.home_score} - {fixture.away_score}
+                            
+                            <div className="px-8 text-center min-w-[120px]">
+                              {live && (
+                                <div className="text-xs text-red-500 font-bold mb-1 animate-pulse" data-testid={`live-${fixture.id}`}>
+                                  ● LIVE {status}
                                 </div>
-                              ) : (
+                              )}
+                              {fixture.status === "completed" || status === "FT" ? (
+                                <div className="text-2xl font-bold text-[#f4c542]" data-testid={`score-${fixture.id}`}>
+                                  {fixture.home_score || 0} - {fixture.away_score || 0}
+                                </div>
+                              ) : status === "HT" ? (
+                                <div>
+                                  <div className="text-xl font-bold text-orange-400" data-testid={`halftime-${fixture.id}`}>HT</div>
+                                  <div className="text-sm text-[#b5b5b5]">{fixture.home_score || 0} - {fixture.away_score || 0}</div>
+                                </div>
+                              ) : status === "scheduled" ? (
                                 <div className="text-[#b5b5b5]" data-testid={`vs-${fixture.id}`}>VS</div>
+                              ) : (
+                                <div>
+                                  <div className="text-xl font-bold text-green-400" data-testid={`minute-${fixture.id}`}>{status}</div>
+                                  <div className="text-sm text-[#b5b5b5]">{fixture.home_score || 0} - {fixture.away_score || 0}</div>
+                                </div>
                               )}
                               <p className="text-xs text-[#b5b5b5] mt-1" data-testid={`date-${fixture.id}`}>
-                                {new Date(fixture.match_date).toLocaleDateString()}
+                                {new Date(fixture.match_date).toLocaleString()}
                               </p>
                             </div>
-                            <div className="flex-1">
+                            
+                            <div className="flex-1 flex items-center gap-3">
+                              {teams[fixture.away_team_id]?.logo_url && (
+                                <img 
+                                  src={teams[fixture.away_team_id].logo_url} 
+                                  alt={`${teams[fixture.away_team_id].name} logo`}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  data-testid={`away-logo-${fixture.id}`}
+                                />
+                              )}
                               <p className="text-[#e5e5e5] font-semibold" data-testid={`away-team-${fixture.id}`}>
                                 {teams[fixture.away_team_id]?.name || "Unknown"}
                               </p>
