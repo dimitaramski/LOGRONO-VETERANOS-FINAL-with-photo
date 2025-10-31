@@ -121,6 +121,97 @@ const AdminDashboard = ({ user, setUser }) => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/");
+    toast.success("Logged out successfully");
+  };
+
+  const handleCreateTeam = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingTeam) {
+        await api.put(`/teams/${editingTeam.id}`, teamForm);
+        toast.success("Team updated successfully");
+      } else {
+        await api.post("/teams", teamForm);
+        toast.success("Team created successfully");
+      }
+      setShowTeamModal(false);
+      setTeamForm({ name: "", division: 1, logo_url: "" });
+      setEditingTeam(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to save team");
+    }
+  };
+
+  const handleEditTeam = (team) => {
+    setEditingTeam(team);
+    setTeamForm({ 
+      name: team.name, 
+      division: team.division,
+      logo_url: team.logo_url || ""
+    });
+    setShowTeamModal(true);
+  };
+
+  const handleCreatePlayer = async (e) => {
+    e.preventDefault();
+    try {
+      const data = { ...playerForm };
+      if (data.jersey_number) {
+        data.jersey_number = parseInt(data.jersey_number);
+      } else {
+        delete data.jersey_number;
+      }
+      await api.post("/players", data);
+      toast.success("Player created successfully");
+      setShowPlayerModal(false);
+      setPlayerForm({ name: "", team_id: "", jersey_number: "" });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create player");
+    }
+  };
+
+  const handleCreateFixture = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/fixtures", fixtureForm);
+      toast.success("Fixture created successfully");
+      setShowFixtureModal(false);
+      setFixtureForm({
+        division: 1,
+        week_number: 1,
+        home_team_id: "",
+        away_team_id: "",
+        match_date: "",
+      });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create fixture");
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      const data = { ...userForm };
+      if (!data.team_id) {
+        delete data.team_id;
+      }
+      await api.post("/auth/register", data);
+      toast.success("User created successfully");
+      setShowUserModal(false);
+      setUserForm({ username: "", password: "", role: "team", team_id: "" });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create user");
+    }
+  };
+
   const handleDeleteTeam = async (teamId) => {
     console.log("Delete team clicked:", teamId);
     if (!window.confirm("Are you sure you want to delete this team? This will affect all associated data.")) {
