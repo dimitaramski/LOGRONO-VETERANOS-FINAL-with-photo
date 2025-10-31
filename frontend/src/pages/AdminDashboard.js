@@ -30,6 +30,7 @@ const AdminDashboard = ({ user, setUser }) => {
   const [showPlayerModal, setShowPlayerModal] = useState(false);
   const [showFixtureModal, setShowFixtureModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [showInstagramModal, setShowInstagramModal] = useState(false);
 
   // Form states
   const [teamForm, setTeamForm] = useState({ name: "", division: 1, logo_url: "" });
@@ -43,6 +44,8 @@ const AdminDashboard = ({ user, setUser }) => {
     match_date: "",
   });
   const [userForm, setUserForm] = useState({ username: "", password: "", role: "team", team_id: "" });
+  const [instagramForm, setInstagramForm] = useState({ instagram_url: "", description: "" });
+  const [instagramPosts, setInstagramPosts] = useState([]);
 
   useEffect(() => {
     fetchData();
