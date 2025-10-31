@@ -439,23 +439,44 @@ const AdminDashboard = ({ user, setUser }) => {
       <nav className="navbar fixed w-full top-0 z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gradient" data-testid="admin-dashboard-title">
-            Admin Dashboard
+            {t('admin.title')}
           </h1>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
+            {/* Language Switcher */}
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`text-sm ${i18n.language === 'es' ? 'text-[#f4c542] font-bold' : 'text-[#e5e5e5]'}`}
+                onClick={() => i18n.changeLanguage('es')}
+                data-testid="admin-lang-es"
+              >
+                ES
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`text-sm ${i18n.language === 'en' ? 'text-[#f4c542] font-bold' : 'text-[#e5e5e5]'}`}
+                onClick={() => i18n.changeLanguage('en')}
+                data-testid="admin-lang-en"
+              >
+                EN
+              </Button>
+            </div>
             <Button
               variant="ghost"
               className="text-[#e5e5e5] hover:text-[#f4c542]"
               onClick={() => navigate("/")}
               data-testid="nav-home-btn"
             >
-              Home
+              {t('admin.home')}
             </Button>
             <Button
               className="btn-secondary"
               onClick={handleLogout}
               data-testid="logout-btn"
             >
-              Logout
+              {t('admin.logout')}
             </Button>
           </div>
         </div>
