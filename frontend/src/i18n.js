@@ -16,7 +16,7 @@ const resources = {
       'welcomeTo': 'Bienvenido a',
       'ligaVeteranos': 'Liga Veteranos',
       'heroText': 'Experimenta la pasión del fútbol veterano en Logroño. Dos divisiones, 24 equipos, una comunidad unida por el amor al juego.',
-      'subscribeFor': 'Suscribirse por €5/Temporada',
+      'subscribeFor': 'Suscribirse por €50/Equipo/Temporada',
       'viewStandings': 'Ver Clasificación',
       
       // Features
