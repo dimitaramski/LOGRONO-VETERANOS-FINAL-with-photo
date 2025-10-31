@@ -78,6 +78,16 @@ function App() {
             }
           />
           <Route
+            path="/admin/fixture/:fixtureId"
+            element={
+              user?.role === "admin" ? (
+                <AdminFixtureEdit user={user} setUser={setUser} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
             path="/team"
             element={
               user?.role === "team" ? (
