@@ -109,6 +109,14 @@ const HomePage = () => {
             >
               {t('copa', 'Copa')}
             </Button>
+            <Button
+              variant="ghost"
+              className="text-[#e5e5e5] hover:text-[#f4c542]"
+              onClick={() => navigate("/sanctions")}
+              data-testid="nav-sanctions-btn"
+            >
+              {t('sanctions', 'Sanciones')}
+            </Button>
             
             {/* Language Switcher */}
             <div className="flex gap-1 ml-2 border-l border-[#f4c542]/30 pl-4">
