@@ -159,10 +159,10 @@ const FixturesPage = () => {
                 <SelectValue placeholder={t('filterByWeek', 'Filtrar por jornada')} />
               </SelectTrigger>
               <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
-                <SelectItem value="all" data-testid="week-all-option">All Weeks</SelectItem>
+                <SelectItem value="all" data-testid="week-all-option">{t('allWeeks', 'Todas las jornadas')}</SelectItem>
                 {getAvailableWeeks().map((week) => (
                   <SelectItem key={week} value={week} data-testid={`week-${week}-option`}>
-                    Week {week}
+                    {t('week', 'Jornada')} {week}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -170,9 +170,9 @@ const FixturesPage = () => {
           </div>
 
           {loading ? (
-            <div className="text-center text-[#f4c542] text-xl">Loading fixtures...</div>
+            <div className="text-center text-[#f4c542] text-xl">{t('loadingFixtures', 'Cargando partidos...')}</div>
           ) : Object.keys(weeks).length === 0 ? (
-            <div className="text-center text-[#b5b5b5] text-xl" data-testid="no-fixtures-message">No fixtures scheduled yet</div>
+            <div className="text-center text-[#b5b5b5] text-xl" data-testid="no-fixtures-message">{t('noFixtures', 'No hay partidos programados')}</div>
           ) : (
             <div className="space-y-8">
               {Object.keys(weeks)
