@@ -99,15 +99,30 @@ const FixturesPage = () => {
     return grouped;
   };
 
+  const getAllWeeks = () => {
+    // Return all 22 weeks (11 first half + 11 second half)
+    return Array.from({ length: 22 }, (_, i) => i + 1);
+  };
+
   const getAvailableWeeks = () => {
-    const weeks = groupByWeek();
-    return Object.keys(weeks).sort((a, b) => parseInt(a) - parseInt(b));
+    return getAllWeeks();
   };
 
   const getFilteredWeeks = () => {
-    const weeks = groupByWeek();
-    if (selectedWeek === "all") return weeks;
-    return { [selectedWeek]: weeks[selectedWeek] || [] };
+    const fixturesGrouped = groupByWeek();
+    const allWeeks = getAllWeeks();
+    
+    if (selectedWeek === "all") {
+      // Show all weeks, including empty ones
+      const result = {};
+      allWeeks.forEach(week => {
+        result[week] = fixturesGrouped[week] || [];
+      });
+      return result;
+    }
+    
+    // Single week selected
+    return { [selectedWeek]: fixturesGrouped[selectedWeek] || [] };
   };
 
   const weeks = getFilteredWeeks();
