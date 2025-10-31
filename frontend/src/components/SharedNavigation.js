@@ -9,9 +9,9 @@ const SharedNavigation = ({ currentPage }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Get logo settings from localStorage or use defaults
-  const logoUrl = localStorage.getItem('leagueLogo') || "https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png";
-  const logoWidth = parseInt(localStorage.getItem('logoWidth')) || 40;
-  const logoHeight = parseInt(localStorage.getItem('logoHeight')) || 40;
+  const logoUrl = localStorage.getItem('leagueLogo') || "https://customer-assets.emergentagent.com/job_veteran-league/artifacts/4py6oacw_Screenshot%202025-10-31%20at%2017.19.50.png";
+  const logoWidth = parseInt(localStorage.getItem('logoWidth')) || 50;
+  const logoHeight = parseInt(localStorage.getItem('logoHeight')) || 50;
 
   return (
     <nav className="navbar fixed w-full top-0 z-50 px-6 py-4">
