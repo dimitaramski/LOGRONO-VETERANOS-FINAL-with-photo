@@ -492,49 +492,49 @@ const AdminDashboard = ({ user, setUser }) => {
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="teams-tab"
               >
-                Teams
+                {t('admin.teams')}
               </TabsTrigger>
               <TabsTrigger
                 value="players"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="players-tab"
               >
-                Players
+                {t('admin.players')}
               </TabsTrigger>
               <TabsTrigger
                 value="fixtures"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="fixtures-tab"
               >
-                Fixtures
+                {t('admin.fixtures')}
               </TabsTrigger>
               <TabsTrigger
                 value="users"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="users-tab"
               >
-                Users
+                {t('admin.users')}
               </TabsTrigger>
               <TabsTrigger
                 value="copa"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="copa-tab"
               >
-                Copa
+                {t('admin.copa')}
               </TabsTrigger>
               <TabsTrigger
                 value="sanctions"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="sanctions-tab"
               >
-                Sanctions
+                {t('admin.sanctions')}
               </TabsTrigger>
               <TabsTrigger
                 value="instagram"
                 className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]"
                 data-testid="instagram-tab"
               >
-                Instagram
+                {t('admin.instagram')}
               </TabsTrigger>
             </TabsList>
 
