@@ -138,16 +138,16 @@ const FixturesPage = () => {
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-bold mb-8 text-center">
-            <span className="text-gradient">Fixtures</span>
+            <span className="text-gradient">{t('fixtures')}</span>
           </h2>
 
           <Tabs value={division.toString()} onValueChange={(v) => setDivision(parseInt(v))} className="mb-4">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-[#1a1a1b] border border-[#f4c542]/20">
               <TabsTrigger value="1" className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]" data-testid="division-1-tab">
-                1st Division
+                {t('firstDivision')}
               </TabsTrigger>
               <TabsTrigger value="2" className="data-[state=active]:bg-[#f4c542] data-[state=active]:text-[#0f0f10]" data-testid="division-2-tab">
-                2nd Division
+                {t('secondDivision')}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -156,7 +156,7 @@ const FixturesPage = () => {
           <div className="mb-8 max-w-md mx-auto">
             <Select value={selectedWeek} onValueChange={setSelectedWeek}>
               <SelectTrigger className="input-field" data-testid="week-filter-select">
-                <SelectValue placeholder="Filter by week" />
+                <SelectValue placeholder={t('filterByWeek', 'Filtrar por jornada')} />
               </SelectTrigger>
               <SelectContent className="bg-[#1a1a1b] border-[#f4c542]/20">
                 <SelectItem value="all" data-testid="week-all-option">All Weeks</SelectItem>
