@@ -506,8 +506,35 @@ const AdminDashboard = ({ user, setUser }) => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Team Logo URL (Optional)</Label>
+              <Input
+                value={teamForm.logo_url}
+                onChange={(e) => setTeamForm({ ...teamForm, logo_url: e.target.value })}
+                placeholder="https://example.com/logo.png"
+                className="input-field"
+                data-testid="team-logo-input"
+              />
+              <p className="text-xs text-[#b5b5b5] mt-1">
+                Paste an image URL or upload to image hosting (Imgur, etc.)
+              </p>
+              {teamForm.logo_url && (
+                <div className="mt-3">
+                  <p className="text-sm text-[#b5b5b5] mb-2">Preview:</p>
+                  <img 
+                    src={teamForm.logo_url} 
+                    alt="Team logo preview"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-[#f4c542]/20"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                    data-testid="team-logo-preview"
+                  />
+                </div>
+              )}
+            </div>
             <Button type="submit" className="btn-primary w-full" data-testid="create-team-submit">
-              Create Team
+              {editingTeam ? "Update Team" : "Create Team"}
             </Button>
           </form>
         </DialogContent>
