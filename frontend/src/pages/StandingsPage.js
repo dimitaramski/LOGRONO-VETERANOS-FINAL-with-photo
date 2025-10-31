@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +8,11 @@ import { toast } from "sonner";
 
 const StandingsPage = () => {
   const navigate = useNavigate();
-  const [division, setDivision] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [division, setDivision] = useState(() => {
+    const divParam = searchParams.get('division');
+    return divParam ? parseInt(divParam) : 1;
+  });
   const [standings, setStandings] = useState([]);
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
@@ -16,6 +20,13 @@ const StandingsPage = () => {
   useEffect(() => {
     fetchStandings();
   }, [division]);
+
+  useEffect(() => {
+    const divParam = searchParams.get('division');
+    if (divParam) {
+      setDivision(parseInt(divParam));
+    }
+  }, [searchParams]);
 
   const fetchStandings = async () => {
     setLoading(true);
