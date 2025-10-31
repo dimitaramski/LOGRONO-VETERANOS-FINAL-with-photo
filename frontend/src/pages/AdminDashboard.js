@@ -89,6 +89,10 @@ const AdminDashboard = ({ user, setUser }) => {
     notes: "",
   });
 
+  // Settings states
+  const [logoUrl, setLogoUrl] = useState("https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png");
+  const [newLogoUrl, setNewLogoUrl] = useState("");
+
   useEffect(() => {
     fetchData();
   }, [activeTab]);
