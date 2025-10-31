@@ -105,6 +105,14 @@ const AdminDashboard = ({ user, setUser }) => {
     }
   }, []);
 
+  // Load logo from localStorage on mount
+  useEffect(() => {
+    const savedLogo = localStorage.getItem('leagueLogo');
+    if (savedLogo) {
+      setLogoUrl(savedLogo);
+    }
+  }, []);
+
   const fetchData = async () => {
     setLoading(true);
     try {
