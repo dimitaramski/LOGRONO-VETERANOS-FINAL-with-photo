@@ -288,18 +288,38 @@ const AdminDashboard = ({ user, setUser }) => {
                           className="flex justify-between items-center p-4 bg-[#0f0f10]/50 rounded-lg border border-[#f4c542]/10"
                           data-testid={`team-item-${team.id}`}
                         >
-                          <div>
-                            <p className="text-[#e5e5e5] font-semibold" data-testid={`team-name-${team.id}`}>{team.name}</p>
-                            <p className="text-sm text-[#b5b5b5]" data-testid={`team-division-${team.id}`}>Division {team.division}</p>
+                          <div className="flex items-center gap-4">
+                            {team.logo_url && (
+                              <img 
+                                src={team.logo_url} 
+                                alt={`${team.name} logo`}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-[#f4c542]/20"
+                                data-testid={`team-logo-${team.id}`}
+                              />
+                            )}
+                            <div>
+                              <p className="text-[#e5e5e5] font-semibold" data-testid={`team-name-${team.id}`}>{team.name}</p>
+                              <p className="text-sm text-[#b5b5b5]" data-testid={`team-division-${team.id}`}>Division {team.division}</p>
+                            </div>
                           </div>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteTeam(team.id)}
-                            data-testid={`delete-team-${team.id}`}
-                          >
-                            Delete
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              className="btn-secondary"
+                              size="sm"
+                              onClick={() => handleEditTeam(team)}
+                              data-testid={`edit-team-${team.id}`}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteTeam(team.id)}
+                              data-testid={`delete-team-${team.id}`}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
