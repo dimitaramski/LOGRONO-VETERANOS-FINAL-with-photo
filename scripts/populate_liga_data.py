@@ -203,7 +203,8 @@ async def populate_database():
             "id": team_id,
             "name": team_data["name"],
             "division": team_data["division"],
-            "logo_url": None
+            "logo_url": None,
+            "created_at": datetime.now().isoformat()
         }
         await db.teams.insert_one(team)
         team_mapping[team_data["name"]] = team_id
