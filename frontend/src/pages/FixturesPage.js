@@ -275,7 +275,8 @@ const FixturesPage = () => {
                               </p>
                             </div>
                           </div>
-                        ))}
+                        );
+                        })}
                       </div>
                     </CardContent>
                   </Card>
@@ -284,6 +285,126 @@ const FixturesPage = () => {
           )}
         </div>
       </div>
+
+      {/* Match Details Modal */}
+      <Dialog open={showMatchDetails} onOpenChange={setShowMatchDetails}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">
+              Match Details
+            </DialogTitle>
+          </DialogHeader>
+          {selectedFixture && (
+            <div className="space-y-6">
+              {/* Match Header */}
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-8 mb-4">
+                  <div className="text-center">
+                    {teams[selectedFixture.home_team_id]?.logo_url && (
+                      <img 
+                        src={teams[selectedFixture.home_team_id].logo_url} 
+                        alt="Home team"
+                        className="w-16 h-16 mx-auto rounded-full object-cover mb-2"
+                      />
+                    )}
+                    <p className="text-[#e5e5e5] font-bold">{teams[selectedFixture.home_team_id]?.name}</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    {isMatchLive(selectedFixture) && (
+                      <div className="text-sm text-red-500 font-bold mb-2 animate-pulse">
+                        ● LIVE {getMatchStatus(selectedFixture)}
+                      </div>
+                    )}
+                    <div className="text-4xl font-bold text-[#f4c542]">
+                      {selectedFixture.home_score || 0} - {selectedFixture.away_score || 0}
+                    </div>
+                    {getMatchStatus(selectedFixture) === "HT" && (
+                      <div className="text-orange-400 font-bold mt-1">Half Time</div>
+                    )}
+                  </div>
+                  
+                  <div className="text-center">
+                    {teams[selectedFixture.away_team_id]?.logo_url && (
+                      <img 
+                        src={teams[selectedFixture.away_team_id].logo_url} 
+                        alt="Away team"
+                        className="w-16 h-16 mx-auto rounded-full object-cover mb-2"
+                      />
+                    )}
+                    <p className="text-[#e5e5e5] font-bold">{teams[selectedFixture.away_team_id]?.name}</p>
+                  </div>
+                </div>
+                <p className="text-sm text-[#b5b5b5]">
+                  {new Date(selectedFixture.match_date).toLocaleString()}
+                </p>
+              </div>
+
+              {/* Goal Scorers */}
+              {(selectedFixture.home_scorers?.length > 0 || selectedFixture.away_scorers?.length > 0) && (
+                <div className="border-t border-[#f4c542]/20 pt-4">
+                  <h3 className="text-lg font-bold text-[#f4c542] mb-3">⚽ Goal Scorers</h3>
+                  <div className="space-y-2">
+                    {selectedFixture.home_scorers?.map((scorer, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-[#e5e5e5]">
+                        <span>{scorer.player_name}</span>
+                        <span className="text-[#f4c542]">{scorer.minute}'</span>
+                      </div>
+                    ))}
+                    {selectedFixture.away_scorers?.map((scorer, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-[#e5e5e5]">
+                        <span>{scorer.player_name}</span>
+                        <span className="text-[#f4c542]">{scorer.minute}'</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Cards */}
+              {(selectedFixture.home_cards?.length > 0 || selectedFixture.away_cards?.length > 0) && (
+                <div className="border-t border-[#f4c542]/20 pt-4">
+                  <h3 className="text-lg font-bold text-[#f4c542] mb-3">Cards</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-[#b5b5b5] mb-2">{teams[selectedFixture.home_team_id]?.name}</p>
+                      {selectedFixture.home_cards?.map((card, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-[#e5e5e5] mb-1">
+                          <span>
+                            {card.card_type === "yellow" ? "🟨" : "🟥"} {card.player_name}
+                          </span>
+                          <span className="text-[#f4c542]">{card.minute}'</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#b5b5b5] mb-2">{teams[selectedFixture.away_team_id]?.name}</p>
+                      {selectedFixture.away_cards?.map((card, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-[#e5e5e5] mb-1">
+                          <span>
+                            {card.card_type === "yellow" ? "🟨" : "🟥"} {card.player_name}
+                          </span>
+                          <span className="text-[#f4c542]">{card.minute}'</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* No events message */}
+              {!selectedFixture.home_scorers?.length && 
+               !selectedFixture.away_scorers?.length && 
+               !selectedFixture.home_cards?.length && 
+               !selectedFixture.away_cards?.length && (
+                <div className="text-center text-[#b5b5b5] py-8">
+                  No match events recorded yet
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
