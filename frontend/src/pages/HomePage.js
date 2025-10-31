@@ -286,33 +286,33 @@ const HomePage = () => {
       <section className="py-20 px-6 bg-gradient-to-r from-[#0f0f10]/50 to-[#1a1a1b]/50">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-bold text-center mb-12">
-            Two <span className="text-gradient">Divisions</span>
+            {t('twoDivisions')}
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="glass-card p-8" data-testid="division-card-1">
-              <h3 className="text-3xl font-bold mb-4 text-[#f4c542]">1st Division</h3>
+              <h3 className="text-3xl font-bold mb-4 text-[#f4c542]">{t('firstDivision')}</h3>
               <p className="text-[#b5b5b5] mb-4">
-                The premier division featuring 12 elite veteran teams competing at the highest level.
+                {t('firstDivisionDesc')}
               </p>
               <Button
                 className="btn-secondary"
                 onClick={() => navigate("/standings")}
                 data-testid="view-division-1-btn"
               >
-                View Standings
+                {t('viewStandings')}
               </Button>
             </div>
             <div className="glass-card p-8" data-testid="division-card-2">
-              <h3 className="text-3xl font-bold mb-4 text-[#f4c542]">2nd Division</h3>
+              <h3 className="text-3xl font-bold mb-4 text-[#f4c542]">{t('secondDivision')}</h3>
               <p className="text-[#b5b5b5] mb-4">
-                12 ambitious teams fighting for promotion and glory in the second tier.
+                {t('secondDivisionDesc')}
               </p>
               <Button
                 className="btn-secondary"
                 onClick={() => navigate("/standings")}
                 data-testid="view-division-2-btn"
               >
-                View Standings
+                {t('viewStandings')}
               </Button>
             </div>
           </div>
