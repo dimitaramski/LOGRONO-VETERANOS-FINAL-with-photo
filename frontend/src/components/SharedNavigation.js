@@ -12,7 +12,8 @@ const SharedNavigation = ({ currentPage }) => {
   const logoUrl = localStorage.getItem('leagueLogo') || "https://customer-assets.emergentagent.com/job_veteran-league/artifacts/4py6oacw_Screenshot%202025-10-31%20at%2017.19.50.png";
   const logoWidth = parseInt(localStorage.getItem('logoWidth')) || 50;
   const logoHeight = parseInt(localStorage.getItem('logoHeight')) || 50;
-  const logoCircleMode = localStorage.getItem('logoCircleMode') === 'true';
+  // Default to true (circular) if not set
+  const logoCircleMode = localStorage.getItem('logoCircleMode') !== 'false';
 
   return (
     <nav className="navbar fixed w-full top-0 z-50 px-6 py-4">
