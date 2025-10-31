@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { api } from "../App";
 import { toast } from "sonner";
+import SharedNavigation from "../components/SharedNavigation";
 
 const FixturesPage = () => {
   const navigate = useNavigate();
