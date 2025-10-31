@@ -1733,6 +1733,71 @@ const AdminDashboard = ({ user, setUser }) => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Sanction Modal */}
+      <Dialog open={showSanctionModal} onOpenChange={setShowSanctionModal}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">Edit Player Suspension</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateSanction} className="space-y-4">
+            <div>
+              <Label className="text-[#e5e5e5]">Suspension Games</Label>
+              <Input
+                type="number"
+                value={sanctionForm.suspension_games}
+                onChange={(e) => setSanctionForm({ ...sanctionForm, suspension_games: e.target.value })}
+                placeholder="Number of games (e.g., 1, 2, 3)"
+                min="0"
+                className="input-field"
+                data-testid="suspension-games-input"
+              />
+              <p className="text-xs text-[#b5b5b5] mt-1">
+                How many games the player will be suspended
+              </p>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Suspension From Week</Label>
+              <Input
+                type="number"
+                value={sanctionForm.suspension_from_week}
+                onChange={(e) => setSanctionForm({ ...sanctionForm, suspension_from_week: e.target.value })}
+                placeholder="Starting week number"
+                min="1"
+                max="22"
+                className="input-field"
+                data-testid="suspension-from-week-input"
+              />
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Suspension To Week</Label>
+              <Input
+                type="number"
+                value={sanctionForm.suspension_to_week}
+                onChange={(e) => setSanctionForm({ ...sanctionForm, suspension_to_week: e.target.value })}
+                placeholder="Ending week number"
+                min="1"
+                max="22"
+                className="input-field"
+                data-testid="suspension-to-week-input"
+              />
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Notes (Optional)</Label>
+              <Input
+                value={sanctionForm.notes}
+                onChange={(e) => setSanctionForm({ ...sanctionForm, notes: e.target.value })}
+                placeholder="Additional notes about the suspension"
+                className="input-field"
+                data-testid="suspension-notes-input"
+              />
+            </div>
+            <Button type="submit" className="btn-primary w-full" data-testid="save-sanction-btn">
+              Save Suspension
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
