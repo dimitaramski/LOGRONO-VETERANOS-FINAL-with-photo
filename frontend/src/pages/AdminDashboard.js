@@ -853,6 +853,44 @@ const AdminDashboard = ({ user, setUser }) => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Add Instagram Post Modal */}
+      <Dialog open={showInstagramModal} onOpenChange={setShowInstagramModal}>
+        <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">Add Instagram Post</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateInstagramPost} className="space-y-4">
+            <div>
+              <Label className="text-[#e5e5e5]">Instagram Post URL</Label>
+              <Input
+                value={instagramForm.instagram_url}
+                onChange={(e) => setInstagramForm({ ...instagramForm, instagram_url: e.target.value })}
+                placeholder="https://www.instagram.com/p/..."
+                required
+                className="input-field"
+                data-testid="instagram-url-input"
+              />
+              <p className="text-xs text-[#b5b5b5] mt-1">
+                Copy the link from Instagram post or reel
+              </p>
+            </div>
+            <div>
+              <Label className="text-[#e5e5e5]">Description (Optional)</Label>
+              <Input
+                value={instagramForm.description}
+                onChange={(e) => setInstagramForm({ ...instagramForm, description: e.target.value })}
+                placeholder="Brief description of the post"
+                className="input-field"
+                data-testid="instagram-description-input"
+              />
+            </div>
+            <Button type="submit" className="btn-primary w-full" data-testid="create-instagram-submit">
+              Add Post
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
