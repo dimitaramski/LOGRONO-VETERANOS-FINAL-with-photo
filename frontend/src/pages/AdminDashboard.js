@@ -103,13 +103,14 @@ const AdminDashboard = ({ user, setUser }) => {
   };
 
   const handleDeleteInstagramPost = async (postId) => {
-    if (!window.confirm("Delete this post?")) return;
+    if (!window.confirm("Are you sure you want to delete this Instagram post?")) return;
     try {
       await api.delete(`/instagram-posts/${postId}`);
-      toast.success("Post deleted successfully");
+      toast.success("Instagram post deleted successfully");
       fetchData();
     } catch (error) {
-      toast.error("Failed to delete post");
+      console.error("Delete error:", error);
+      toast.error(error.response?.data?.detail || "Failed to delete Instagram post. Please try again.");
     }
   };
 
