@@ -129,7 +129,19 @@ const StandingsPage = () => {
                         standings.map((row) => (
                           <tr key={row.team_id} className="table-row" data-testid={`team-row-${row.team_id}`}>
                             <td className="p-4 font-bold text-[#f4c542]" data-testid={`pos-${row.team_id}`}>{row.position}</td>
-                            <td className="p-4 text-[#e5e5e5] font-semibold" data-testid={`name-${row.team_id}`}>{row.team_name}</td>
+                            <td className="p-4 text-[#e5e5e5] font-semibold" data-testid={`name-${row.team_id}`}>
+                              <div className="flex items-center gap-3">
+                                {teams[row.team_id]?.logo_url && (
+                                  <img 
+                                    src={teams[row.team_id].logo_url} 
+                                    alt={`${row.team_name} logo`}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                    data-testid={`logo-${row.team_id}`}
+                                  />
+                                )}
+                                <span>{row.team_name}</span>
+                              </div>
+                            </td>
                             <td className="p-4 text-center text-[#b5b5b5]" data-testid={`gp-${row.team_id}`}>{row.games_played}</td>
                             <td className="p-4 text-center text-[#b5b5b5]" data-testid={`w-${row.team_id}`}>{row.games_won}</td>
                             <td className="p-4 text-center text-[#b5b5b5]" data-testid={`d-${row.team_id}`}>{row.games_draw}</td>
