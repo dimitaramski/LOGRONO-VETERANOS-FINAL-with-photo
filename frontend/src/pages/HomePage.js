@@ -69,12 +69,14 @@ const HomePage = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_ligaveteranos/artifacts/cxk15ekf_Screenshot%202025-10-31%20at%2012.07.51.png"
               alt="Liga Veteranos Logo" 
-              className="h-14 w-14 rounded-full object-cover border-2 border-[#f4c542]"
+              className="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover border-2 border-[#f4c542]"
               data-testid="league-logo"
             />
-            <h1 className="text-2xl font-bold text-gradient">Liga Veteranos Logroño</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-gradient">Liga Veteranos Logroño</h1>
           </div>
-          <div className="flex gap-4 items-center">
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex gap-4 items-center">
             <Button
               variant="ghost"
               className="text-[#e5e5e5] hover:text-[#f4c542]"
@@ -131,7 +133,86 @@ const HomePage = () => {
               {t('login')}
             </Button>
           </div>
+
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden text-[#f4c542] focus:outline-none"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            data-testid="mobile-menu-btn"
+          >
+            {mobileMenuOpen ? (
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-[#1a1a1b] border-t border-[#f4c542]/20 shadow-xl">
+            <div className="flex flex-col p-4 space-y-2">
+              <Button
+                variant="ghost"
+                className="w-full text-left text-[#e5e5e5] hover:text-[#f4c542] hover:bg-[#f4c542]/10 justify-start"
+                onClick={() => { navigate("/fixtures"); setMobileMenuOpen(false); }}
+                data-testid="mobile-fixtures-btn"
+              >
+                ⚽ {t('fixtures')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-left text-[#e5e5e5] hover:text-[#f4c542] hover:bg-[#f4c542]/10 justify-start"
+                onClick={() => { navigate("/standings"); setMobileMenuOpen(false); }}
+                data-testid="mobile-standings-btn"
+              >
+                📊 {t('standings')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-left text-[#e5e5e5] hover:text-[#f4c542] hover:bg-[#f4c542]/10 justify-start"
+                onClick={() => { navigate("/top-scorers"); setMobileMenuOpen(false); }}
+                data-testid="mobile-top-scorers-btn"
+              >
+                🏆 {t('topScorers')}
+              </Button>
+              
+              <div className="border-t border-[#f4c542]/20 my-2 pt-2">
+                <p className="text-[#b5b5b5] text-sm mb-2 px-3">Idioma / Language</p>
+                <div className="flex gap-2">
+                  <Button
+                    variant={i18n.language === 'es' ? 'default' : 'ghost'}
+                    className={`flex-1 ${i18n.language === 'es' ? 'bg-[#f4c542] text-[#0f0f10]' : 'text-[#e5e5e5]'}`}
+                    onClick={() => changeLanguage('es')}
+                    data-testid="mobile-lang-es"
+                  >
+                    🇪🇸 Español
+                  </Button>
+                  <Button
+                    variant={i18n.language === 'en' ? 'default' : 'ghost'}
+                    className={`flex-1 ${i18n.language === 'en' ? 'bg-[#f4c542] text-[#0f0f10]' : 'text-[#e5e5e5]'}`}
+                    onClick={() => changeLanguage('en')}
+                    data-testid="mobile-lang-en"
+                  >
+                    🇬🇧 English
+                  </Button>
+                </div>
+              </div>
+
+              <Button
+                className="btn-primary w-full mt-2"
+                onClick={() => { navigate("/login"); setMobileMenuOpen(false); }}
+                data-testid="mobile-login-btn"
+              >
+                {t('login')}
+              </Button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
