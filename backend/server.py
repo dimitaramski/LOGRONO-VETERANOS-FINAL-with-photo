@@ -301,6 +301,7 @@ class Sanction(BaseModel):
     player_name: str
     team_id: str
     team_name: str
+    division: int
     card_type: str  # yellow or red
     total_yellow_cards: int = 0
     total_red_cards: int = 0
