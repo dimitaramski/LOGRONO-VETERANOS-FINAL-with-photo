@@ -92,16 +92,19 @@ const CopaPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0f10] to-[#1a1a1b] pt-32 pb-20 px-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gradient mb-4">
-            {t("copa.title", "Copa del Veteranos")}
-          </h1>
-          <p className="text-[#b5b5b5] text-lg">
-            {t("copa.subtitle", "Tournament competition with teams from both divisions")}
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0f10] to-[#1a1a1b]">
+      <SharedNavigation />
+      
+      <div className="pt-32 pb-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-gradient mb-4">
+              {t("copa.title", "Copa del Veteranos")}
+            </h1>
+            <p className="text-[#b5b5b5] text-lg">
+              {t("copa.subtitle", "Tournament competition with teams from both divisions")}
+            </p>
+          </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-3 bg-[#1a1a1b] border border-[#f4c542]/20 mb-8">
