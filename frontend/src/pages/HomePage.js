@@ -328,7 +328,7 @@ const HomePage = () => {
               </p>
               <Button
                 className="btn-secondary"
-                onClick={() => navigate("/standings")}
+                onClick={() => navigate("/standings?division=1")}
                 data-testid="view-division-1-btn"
               >
                 {t('viewStandings')}
@@ -341,7 +341,7 @@ const HomePage = () => {
               </p>
               <Button
                 className="btn-secondary"
-                onClick={() => navigate("/standings")}
+                onClick={() => navigate("/standings?division=2")}
                 data-testid="view-division-2-btn"
               >
                 {t('viewStandings')}
