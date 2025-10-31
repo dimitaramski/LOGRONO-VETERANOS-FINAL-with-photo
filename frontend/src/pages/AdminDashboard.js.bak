@@ -543,7 +543,7 @@ const AdminDashboard = ({ user, setUser }) => {
               <Card className="glass-card border-[#f4c542]/20">
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl text-[#f4c542]">{t('admin.teamsManagement')}</CardTitle>
+                    <CardTitle className="text-2xl text-[#f4c542]">Teams Management</CardTitle>
                     <Button className="btn-primary" onClick={() => setShowTeamModal(true)} data-testid="add-team-btn">
                       + Add Team
                     </Button>
@@ -605,7 +605,7 @@ const AdminDashboard = ({ user, setUser }) => {
               <Card className="glass-card border-[#f4c542]/20">
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl text-[#f4c542]">{t('admin.playersManagement')}</CardTitle>
+                    <CardTitle className="text-2xl text-[#f4c542]">Players Management</CardTitle>
                     <Button className="btn-primary" onClick={() => setShowPlayerModal(true)} data-testid="add-player-btn">
                       + Add Player
                     </Button>
@@ -698,7 +698,7 @@ const AdminDashboard = ({ user, setUser }) => {
               <Card className="glass-card border-[#f4c542]/20">
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl text-[#f4c542]">{t('admin.fixturesManagement')}</CardTitle>
+                    <CardTitle className="text-2xl text-[#f4c542]">Fixtures Management</CardTitle>
                     <Button className="btn-primary" onClick={() => setShowFixtureModal(true)} data-testid="add-fixture-btn">
                       + Add Fixture
                     </Button>
@@ -750,7 +750,7 @@ const AdminDashboard = ({ user, setUser }) => {
               <Card className="glass-card border-[#f4c542]/20">
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl text-[#f4c542]">{t('admin.usersManagement')}</CardTitle>
+                    <CardTitle className="text-2xl text-[#f4c542]">Users Management</CardTitle>
                     <Button className="btn-primary" onClick={() => setShowUserModal(true)} data-testid="add-user-btn">
                       + Add User
                     </Button>
@@ -784,7 +784,7 @@ const AdminDashboard = ({ user, setUser }) => {
             <TabsContent value="sanctions">
               <Card className="glass-card border-[#f4c542]/20">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-[#f4c542]">{t('admin.sanctionsManagement')}</CardTitle>
+                  <CardTitle className="text-2xl text-[#f4c542]">Sanctions Management</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {loading ? (
@@ -896,7 +896,7 @@ const AdminDashboard = ({ user, setUser }) => {
               <Card className="glass-card border-[#f4c542]/20">
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl text-[#f4c542]">{t('admin.instagramPosts')}</CardTitle>
+                    <CardTitle className="text-2xl text-[#f4c542]">Instagram Posts</CardTitle>
                     <Button className="btn-primary" onClick={() => setShowInstagramModal(true)} data-testid="add-instagram-btn">
                       + Add Post
                     </Button>
@@ -953,11 +953,11 @@ const AdminDashboard = ({ user, setUser }) => {
             {/* Copa Tab */}
             <TabsContent value="copa">
               <div className="space-y-8">
-                {/* {t('admin.copaGroups')} */}
+                {/* Copa Groups */}
                 <Card className="glass-card border-[#f4c542]/20">
                   <CardHeader>
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-2xl text-[#f4c542]">{t('admin.copaGroups')}</CardTitle>
+                      <CardTitle className="text-2xl text-[#f4c542]">Copa Groups</CardTitle>
                       <Button className="btn-primary" onClick={() => setShowCopaGroupModal(true)} data-testid="add-copa-group-btn">
                         + Add/Edit Group
                       </Button>
@@ -1025,11 +1025,11 @@ const AdminDashboard = ({ user, setUser }) => {
                   </CardContent>
                 </Card>
 
-                {/* {t('admin.copaFixtures')} */}
+                {/* Copa Fixtures */}
                 <Card className="glass-card border-[#f4c542]/20">
                   <CardHeader>
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-2xl text-[#f4c542]">{t('admin.copaFixtures')}</CardTitle>
+                      <CardTitle className="text-2xl text-[#f4c542]">Copa Fixtures</CardTitle>
                       <Button className="btn-primary" onClick={() => setShowCopaFixtureModal(true)} data-testid="add-copa-fixture-btn">
                         + Add Fixture
                       </Button>
@@ -1083,7 +1083,7 @@ const AdminDashboard = ({ user, setUser }) => {
                 <Card className="glass-card border-[#f4c542]/20">
                   <CardHeader>
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-2xl text-[#f4c542]">{t('admin.copaBrackets')}</CardTitle>
+                      <CardTitle className="text-2xl text-[#f4c542]">Knockout Brackets</CardTitle>
                       <Button className="btn-primary" onClick={() => setShowCopaBracketModal(true)} data-testid="add-copa-bracket-btn">
                         + Add Bracket Match
                       </Button>
