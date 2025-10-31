@@ -174,6 +174,7 @@ class TopScorer(BaseModel):
     player_name: str
     team_id: str
     team_name: str
+    division: int
     goals: int
 
 class Subscription(BaseModel):
