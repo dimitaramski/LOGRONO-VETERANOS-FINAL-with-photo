@@ -59,9 +59,9 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             <img 
-              src="https://customer-assets.emergentagent.com/job_ligaveteranos/artifacts/j85zjj92_Screenshot%202025-10-31%20at%2012.08.53.png"
+              src="https://customer-assets.emergentagent.com/job_ligaveteranos/artifacts/cxk15ekf_Screenshot%202025-10-31%20at%2012.07.51.png"
               alt="Liga Veteranos Logo" 
-              className="h-12 w-12 rounded-full object-cover"
+              className="h-14 w-14 rounded-full object-cover border-2 border-[#f4c542]"
               data-testid="league-logo"
             />
             <h1 className="text-2xl font-bold text-gradient">Liga Veteranos Logroño</h1>
