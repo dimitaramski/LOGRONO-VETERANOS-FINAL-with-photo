@@ -792,6 +792,30 @@ async def init_admin():
     await db.users.insert_one(doc)
     return {"message": "Admin user created", "username": "admin", "password": "admin123"}
 
+# Instagram Posts Routes
+@api_router.get("/instagram-posts", response_model=List[InstagramPost])
+async def get_instagram_posts():
+    posts = await db.instagram_posts.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    for post in posts:
+        if isinstance(post['created_at'], str):
+            post['created_at'] = datetime.fromisoformat(post['created_at'])
+    return posts
+
+@api_router.post("/instagram-posts", response_model=InstagramPost)
+async def create_instagram_post(post_data: InstagramPostCreate, admin: User = Depends(get_admin_user)):
+    post = InstagramPost(**post_data.model_dump())
+    doc = post.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.instagram_posts.insert_one(doc)
+    return post
+
+@api_router.delete("/instagram-posts/{post_id}")
+async def delete_instagram_post(post_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.instagram_posts.delete_one({"id": post_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return {"message": "Post deleted successfully"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
