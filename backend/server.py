@@ -114,6 +114,8 @@ class Fixture(BaseModel):
     status: str = "scheduled"  # scheduled or completed
     home_scorers: List[GoalScorer] = []
     away_scorers: List[GoalScorer] = []
+    home_cards: List[Card] = []
+    away_cards: List[Card] = []
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class FixtureCreate(BaseModel):
@@ -122,6 +124,11 @@ class FixtureCreate(BaseModel):
     home_team_id: str
     away_team_id: str
     match_date: str
+
+class FixtureCreateBulk(BaseModel):
+    division: int
+    week_number: int
+    fixtures: List[dict]  # [{home_team_id, away_team_id, match_date}]
 
 class FixtureUpdate(BaseModel):
     home_score: Optional[int] = None
