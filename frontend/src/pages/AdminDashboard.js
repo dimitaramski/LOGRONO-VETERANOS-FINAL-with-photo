@@ -132,6 +132,9 @@ const AdminDashboard = ({ user, setUser }) => {
         setCopaFixtures(fixturesRes.data);
         setCopaBrackets(bracketsRes.data);
         setTeams(teamsRes.data);
+      } else if (activeTab === "sanctions") {
+        const res = await api.get("/sanctions");
+        setSanctions(res.data);
       }
     } catch (error) {
       toast.error("Failed to load data");
