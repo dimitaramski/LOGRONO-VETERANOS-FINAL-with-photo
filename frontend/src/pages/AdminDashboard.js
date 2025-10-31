@@ -76,6 +76,17 @@ const AdminDashboard = ({ user, setUser }) => {
     match_date: "",
   });
 
+  // Sanctions states
+  const [sanctions, setSanctions] = useState([]);
+  const [showSanctionModal, setShowSanctionModal] = useState(false);
+  const [sanctionForm, setSanctionForm] = useState({
+    player_id: "",
+    suspension_games: "",
+    suspension_from_week: "",
+    suspension_to_week: "",
+    notes: "",
+  });
+
   useEffect(() => {
     fetchData();
   }, [activeTab]);
