@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "../App";
 import { toast } from "sonner";
+import SharedNavigation from "../components/SharedNavigation";
 
 const StandingsPage = () => {
   const navigate = useNavigate();
