@@ -11,6 +11,7 @@ import TeamDashboard from "./pages/TeamDashboard";
 import FixturesPage from "./pages/FixturesPage";
 import StandingsPage from "./pages/StandingsPage";
 import TopScorersPage from "./pages/TopScorersPage";
+import CopaPage from "./pages/CopaPage";
 import { Toaster } from "@/components/ui/sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
