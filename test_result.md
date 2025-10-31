@@ -132,9 +132,9 @@ test_plan:
 
 backend:
   - task: "Database Population with Liga Veteranos Logroño Data"
-    implemented: false
-    working: false
-    file: "/app/backend/server.py"
+    implemented: true
+    working: true
+    file: "/app/scripts/populate_liga_data.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
@@ -142,6 +142,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "CRITICAL ISSUE: Database has been populated with generic team names instead of actual Liga Veteranos Logroño teams. Expected teams like 'V.L. PLAK LA MULA', 'S.D. COSMOS', 'BAR CAFÉ BALA' etc. but found generic names like 'FC Logroño Veterans', 'Rioja United'. Only 2 weeks of fixtures exist instead of required 11 for Division 1 and 6 for Division 2. Standings data is mostly empty with only 1 completed match. Database needs complete repopulation with actual league data from the images provided in the requirements."
+      - working: true
+        agent: "testing"
+        comment: "RESOLVED: Fixed database population script and successfully populated database with correct Liga Veteranos Logroño data. All 24 teams now have correct names (V.L. PLAK LA MULA, S.D. COSMOS, BAR CAFÉ BALA, etc.). Division 1 has all 11 Jornadas with Jornadas 1-4 completed and 5-11 scheduled. Division 2 has all 6 Jornadas with all fixtures from Jornadas 1-4 completed. Standings show correct points: Division 1 leaders V.L. PLAK LA MULA and S.D. COSMOS both with 12 points, Division 2 leader BAR CAFÉ BALA with 10 points. All API endpoints working correctly and returning expected data structure."
 
 agent_communication:
   - agent: "main"
