@@ -278,6 +278,31 @@ const AdminDashboard = ({ user, setUser }) => {
     }
   };
 
+  // Sanction handlers
+  const handleUpdateSanction = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/sanctions/${sanctionForm.player_id}`, {
+        suspension_games: sanctionForm.suspension_games ? parseInt(sanctionForm.suspension_games) : null,
+        suspension_from_week: sanctionForm.suspension_from_week ? parseInt(sanctionForm.suspension_from_week) : null,
+        suspension_to_week: sanctionForm.suspension_to_week ? parseInt(sanctionForm.suspension_to_week) : null,
+        notes: sanctionForm.notes || null,
+      });
+      toast.success("Sanction updated successfully");
+      setShowSanctionModal(false);
+      setSanctionForm({
+        player_id: "",
+        suspension_games: "",
+        suspension_from_week: "",
+        suspension_to_week: "",
+        notes: "",
+      });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to update sanction");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser(null);
