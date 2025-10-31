@@ -169,9 +169,9 @@ const HomePage = () => {
             data-testid="feature-card-fixtures"
           >
             <div className="text-4xl mb-4">⚽</div>
-            <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">Weekly Fixtures</h3>
+            <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">{t('weeklyFixtures')}</h3>
             <p className="text-[#b5b5b5]">
-              Follow all matches week by week. Stay updated with schedules and results from both divisions.
+              {t('weeklyFixturesDesc')}
             </p>
           </div>
           <div 
@@ -180,9 +180,9 @@ const HomePage = () => {
             data-testid="feature-card-standings"
           >
             <div className="text-4xl mb-4">📊</div>
-            <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">Live Standings</h3>
+            <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">{t('liveStandings')}</h3>
             <p className="text-[#b5b5b5]">
-              Track your team's position in real-time. Complete statistics including wins, draws, and goal difference.
+              {t('liveStandingsDesc')}
             </p>
           </div>
           <div 
@@ -191,9 +191,9 @@ const HomePage = () => {
             data-testid="feature-card-scorers"
           >
             <div className="text-4xl mb-4">🏆</div>
-            <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">Top Scorers</h3>
+            <h3 className="text-2xl font-bold mb-3 text-[#f4c542]">{t('topScorersTitle')}</h3>
             <p className="text-[#b5b5b5]">
-              Celebrate the league's top goal scorers. See who's leading the race for the golden boot.
+              {t('topScorersDesc')}
             </p>
           </div>
         </div>
