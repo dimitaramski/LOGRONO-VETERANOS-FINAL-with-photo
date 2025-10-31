@@ -907,6 +907,355 @@ async def delete_instagram_post(post_id: str, admin: User = Depends(get_admin_us
         raise HTTPException(status_code=404, detail="Post not found")
     return {"message": "Post deleted successfully"}
 
+# ============= Copa Routes =============
+
+# Copa Groups
+@api_router.get("/copa/groups", response_model=List[CopaGroup])
+async def get_copa_groups():
+    groups = await db.copa_groups.find({}, {"_id": 0}).to_list(length=None)
+    for group in groups:
+        if isinstance(group.get('created_at'), str):
+            group['created_at'] = datetime.fromisoformat(group['created_at'])
+    return groups
+
+@api_router.post("/copa/groups", response_model=CopaGroup)
+async def create_copa_group(group_data: CopaGroupCreate, admin: User = Depends(get_admin_user)):
+    # Check if group already exists
+    existing = await db.copa_groups.find_one({"group_name": group_data.group_name})
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Group {group_data.group_name} already exists")
+    
+    group = CopaGroup(**group_data.model_dump())
+    doc = group.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.copa_groups.insert_one(doc)
+    return group
+
+@api_router.put("/copa/groups/{group_name}")
+async def update_copa_group(group_name: str, group_data: CopaGroupCreate, admin: User = Depends(get_admin_user)):
+    result = await db.copa_groups.update_one(
+        {"group_name": group_name},
+        {"$set": {"team_ids": group_data.team_ids}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Group not found")
+    return {"message": "Group updated successfully"}
+
+@api_router.delete("/copa/groups/{group_name}")
+async def delete_copa_group(group_name: str, admin: User = Depends(get_admin_user)):
+    result = await db.copa_groups.delete_one({"group_name": group_name})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Group not found")
+    return {"message": "Group deleted successfully"}
+
+# Copa Fixtures
+@api_router.get("/copa/fixtures", response_model=List[CopaFixture])
+async def get_copa_fixtures():
+    fixtures = await db.copa_fixtures.find({}, {"_id": 0}).to_list(length=None)
+    for fixture in fixtures:
+        if isinstance(fixture.get('match_date'), str):
+            fixture['match_date'] = datetime.fromisoformat(fixture['match_date'])
+        if isinstance(fixture.get('updated_at'), str):
+            fixture['updated_at'] = datetime.fromisoformat(fixture['updated_at'])
+    return fixtures
+
+@api_router.post("/copa/fixtures", response_model=CopaFixture)
+async def create_copa_fixture(fixture_data: CopaFixtureCreate, admin: User = Depends(get_admin_user)):
+    fixture = CopaFixture(
+        group_name=fixture_data.group_name,
+        jornada=fixture_data.jornada,
+        home_team_id=fixture_data.home_team_id,
+        away_team_id=fixture_data.away_team_id,
+        match_date=datetime.fromisoformat(fixture_data.match_date)
+    )
+    doc = fixture.model_dump()
+    doc['match_date'] = doc['match_date'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.copa_fixtures.insert_one(doc)
+    return fixture
+
+@api_router.put("/copa/fixtures/{fixture_id}")
+async def update_copa_fixture(fixture_id: str, update_data: CopaFixtureUpdate, admin: User = Depends(get_admin_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    
+    if 'match_date' in update_dict:
+        update_dict['match_date'] = datetime.fromisoformat(update_dict['match_date']).isoformat()
+    
+    update_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.copa_fixtures.update_one({"id": fixture_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    return {"message": "Fixture updated successfully"}
+
+@api_router.delete("/copa/fixtures/{fixture_id}")
+async def delete_copa_fixture(fixture_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.copa_fixtures.delete_one({"id": fixture_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    return {"message": "Fixture deleted successfully"}
+
+# Copa Fixture - Add/Remove Scorers and Cards
+@api_router.post("/copa/fixtures/{fixture_id}/scorers")
+async def add_copa_goal_scorer(fixture_id: str, scorer_data: AddGoalScorer, admin: User = Depends(get_admin_user)):
+    fixture = await db.copa_fixtures.find_one({"id": fixture_id})
+    if not fixture:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    player = await db.players.find_one({"id": scorer_data.player_id})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    goal = GoalScorer(player_id=scorer_data.player_id, player_name=player['name'], minute=scorer_data.minute)
+    
+    if scorer_data.team_side == "home":
+        await db.copa_fixtures.update_one({"id": fixture_id}, {"$push": {"home_scorers": goal.model_dump()}})
+    else:
+        await db.copa_fixtures.update_one({"id": fixture_id}, {"$push": {"away_scorers": goal.model_dump()}})
+    
+    await db.players.update_one({"id": scorer_data.player_id}, {"$inc": {"goals_scored": 1}})
+    
+    return {"message": "Goal scorer added successfully"}
+
+@api_router.delete("/copa/fixtures/{fixture_id}/scorers")
+async def remove_copa_goal_scorer(fixture_id: str, scorer_data: RemoveGoalScorer, admin: User = Depends(get_admin_user)):
+    fixture = await db.copa_fixtures.find_one({"id": fixture_id})
+    if not fixture:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    scorer_list = fixture.get(f"{scorer_data.team_side}_scorers", [])
+    scorer_to_remove = next((s for s in scorer_list if s['id'] == scorer_data.goal_id), None)
+    
+    if not scorer_to_remove:
+        raise HTTPException(status_code=404, detail="Goal scorer not found")
+    
+    await db.copa_fixtures.update_one(
+        {"id": fixture_id},
+        {"$pull": {f"{scorer_data.team_side}_scorers": {"id": scorer_data.goal_id}}}
+    )
+    
+    await db.players.update_one({"id": scorer_to_remove['player_id']}, {"$inc": {"goals_scored": -1}})
+    
+    return {"message": "Goal scorer removed successfully"}
+
+@api_router.post("/copa/fixtures/{fixture_id}/cards")
+async def add_copa_card(fixture_id: str, card_data: AddCard, admin: User = Depends(get_admin_user)):
+    fixture = await db.copa_fixtures.find_one({"id": fixture_id})
+    if not fixture:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    player = await db.players.find_one({"id": card_data.player_id})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    card = Card(player_id=card_data.player_id, player_name=player['name'], card_type=card_data.card_type, minute=card_data.minute)
+    
+    if card_data.team_side == "home":
+        await db.copa_fixtures.update_one({"id": fixture_id}, {"$push": {"home_cards": card.model_dump()}})
+    else:
+        await db.copa_fixtures.update_one({"id": fixture_id}, {"$push": {"away_cards": card.model_dump()}})
+    
+    if card_data.card_type == "yellow":
+        await db.players.update_one({"id": card_data.player_id}, {"$inc": {"yellow_cards": 1}})
+    else:
+        await db.players.update_one({"id": card_data.player_id}, {"$inc": {"red_cards": 1}})
+    
+    return {"message": "Card added successfully"}
+
+@api_router.delete("/copa/fixtures/{fixture_id}/cards")
+async def remove_copa_card(fixture_id: str, card_data: RemoveCard, admin: User = Depends(get_admin_user)):
+    fixture = await db.copa_fixtures.find_one({"id": fixture_id})
+    if not fixture:
+        raise HTTPException(status_code=404, detail="Fixture not found")
+    
+    card_list = fixture.get(f"{card_data.team_side}_cards", [])
+    card_to_remove = next((c for c in card_list if c['id'] == card_data.card_id), None)
+    
+    if not card_to_remove:
+        raise HTTPException(status_code=404, detail="Card not found")
+    
+    await db.copa_fixtures.update_one(
+        {"id": fixture_id},
+        {"$pull": {f"{card_data.team_side}_cards": {"id": card_data.card_id}}}
+    )
+    
+    if card_to_remove['card_type'] == "yellow":
+        await db.players.update_one({"id": card_to_remove['player_id']}, {"$inc": {"yellow_cards": -1}})
+    else:
+        await db.players.update_one({"id": card_to_remove['player_id']}, {"$inc": {"red_cards": -1}})
+    
+    return {"message": "Card removed successfully"}
+
+# Copa Standings
+@api_router.get("/copa/standings/{group_name}", response_model=List[CopaStandingsRow])
+async def get_copa_standings(group_name: str):
+    # Get group teams
+    group = await db.copa_groups.find_one({"group_name": group_name})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+    # Get fixtures for this group
+    fixtures = await db.copa_fixtures.find({"group_name": group_name, "status": "completed"}, {"_id": 0}).to_list(length=None)
+    
+    # Calculate standings
+    standings = {}
+    for team_id in group['team_ids']:
+        team = await db.teams.find_one({"id": team_id})
+        if team:
+            standings[team_id] = {
+                "team_id": team_id,
+                "team_name": team['name'],
+                "games_played": 0,
+                "games_won": 0,
+                "games_draw": 0,
+                "games_lost": 0,
+                "goals_for": 0,
+                "goals_against": 0,
+                "points": 0
+            }
+    
+    for fixture in fixtures:
+        home_id = fixture['home_team_id']
+        away_id = fixture['away_team_id']
+        home_score = fixture.get('home_score', 0)
+        away_score = fixture.get('away_score', 0)
+        
+        if home_id in standings:
+            standings[home_id]['games_played'] += 1
+            standings[home_id]['goals_for'] += home_score
+            standings[home_id]['goals_against'] += away_score
+            
+            if home_score > away_score:
+                standings[home_id]['games_won'] += 1
+                standings[home_id]['points'] += 3
+            elif home_score == away_score:
+                standings[home_id]['games_draw'] += 1
+                standings[home_id]['points'] += 1
+            else:
+                standings[home_id]['games_lost'] += 1
+        
+        if away_id in standings:
+            standings[away_id]['games_played'] += 1
+            standings[away_id]['goals_for'] += away_score
+            standings[away_id]['goals_against'] += home_score
+            
+            if away_score > home_score:
+                standings[away_id]['games_won'] += 1
+                standings[away_id]['points'] += 3
+            elif away_score == home_score:
+                standings[away_id]['games_draw'] += 1
+                standings[away_id]['points'] += 1
+            else:
+                standings[away_id]['games_lost'] += 1
+    
+    # Sort by points, then goal difference
+    standings_list = list(standings.values())
+    standings_list.sort(key=lambda x: (x['points'], x['goals_for'] - x['goals_against'], x['goals_for']), reverse=True)
+    
+    # Add position and goal difference
+    for i, row in enumerate(standings_list):
+        row['position'] = i + 1
+        row['goal_difference'] = row['goals_for'] - row['goals_against']
+    
+    return [CopaStandingsRow(**row) for row in standings_list]
+
+# Copa Brackets
+@api_router.get("/copa/brackets", response_model=List[CopaBracket])
+async def get_copa_brackets():
+    brackets = await db.copa_brackets.find({}, {"_id": 0}).to_list(length=None)
+    for bracket in brackets:
+        if isinstance(bracket.get('match_date'), str):
+            bracket['match_date'] = datetime.fromisoformat(bracket['match_date'])
+        if isinstance(bracket.get('created_at'), str):
+            bracket['created_at'] = datetime.fromisoformat(bracket['created_at'])
+        if isinstance(bracket.get('updated_at'), str):
+            bracket['updated_at'] = datetime.fromisoformat(bracket['updated_at'])
+    return brackets
+
+@api_router.post("/copa/brackets", response_model=CopaBracket)
+async def create_copa_bracket(bracket_data: CopaBracketCreate, admin: User = Depends(get_admin_user)):
+    bracket = CopaBracket(
+        round_type=bracket_data.round_type,
+        match_position=bracket_data.match_position,
+        home_team_id=bracket_data.home_team_id,
+        away_team_id=bracket_data.away_team_id,
+        match_date=datetime.fromisoformat(bracket_data.match_date) if bracket_data.match_date else None
+    )
+    doc = bracket.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    if doc.get('match_date'):
+        doc['match_date'] = doc['match_date'].isoformat()
+    await db.copa_brackets.insert_one(doc)
+    return bracket
+
+@api_router.put("/copa/brackets/{bracket_id}")
+async def update_copa_bracket(bracket_id: str, update_data: CopaBracketUpdate, admin: User = Depends(get_admin_user)):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    
+    if 'match_date' in update_dict and update_dict['match_date']:
+        update_dict['match_date'] = datetime.fromisoformat(update_dict['match_date']).isoformat()
+    
+    update_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.copa_brackets.update_one({"id": bracket_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bracket not found")
+    return {"message": "Bracket updated successfully"}
+
+@api_router.delete("/copa/brackets/{bracket_id}")
+async def delete_copa_bracket(bracket_id: str, admin: User = Depends(get_admin_user)):
+    result = await db.copa_brackets.delete_one({"id": bracket_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bracket not found")
+    return {"message": "Bracket deleted successfully"}
+
+# Copa Bracket - Add/Remove Scorers and Cards
+@api_router.post("/copa/brackets/{bracket_id}/scorers")
+async def add_copa_bracket_goal_scorer(bracket_id: str, scorer_data: AddGoalScorer, admin: User = Depends(get_admin_user)):
+    bracket = await db.copa_brackets.find_one({"id": bracket_id})
+    if not bracket:
+        raise HTTPException(status_code=404, detail="Bracket match not found")
+    
+    player = await db.players.find_one({"id": scorer_data.player_id})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    goal = GoalScorer(player_id=scorer_data.player_id, player_name=player['name'], minute=scorer_data.minute)
+    
+    if scorer_data.team_side == "home":
+        await db.copa_brackets.update_one({"id": bracket_id}, {"$push": {"home_scorers": goal.model_dump()}})
+    else:
+        await db.copa_brackets.update_one({"id": bracket_id}, {"$push": {"away_scorers": goal.model_dump()}})
+    
+    await db.players.update_one({"id": scorer_data.player_id}, {"$inc": {"goals_scored": 1}})
+    
+    return {"message": "Goal scorer added successfully"}
+
+@api_router.post("/copa/brackets/{bracket_id}/cards")
+async def add_copa_bracket_card(bracket_id: str, card_data: AddCard, admin: User = Depends(get_admin_user)):
+    bracket = await db.copa_brackets.find_one({"id": bracket_id})
+    if not bracket:
+        raise HTTPException(status_code=404, detail="Bracket match not found")
+    
+    player = await db.players.find_one({"id": card_data.player_id})
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    
+    card = Card(player_id=card_data.player_id, player_name=player['name'], card_type=card_data.card_type, minute=card_data.minute)
+    
+    if card_data.team_side == "home":
+        await db.copa_brackets.update_one({"id": bracket_id}, {"$push": {"home_cards": card.model_dump()}})
+    else:
+        await db.copa_brackets.update_one({"id": bracket_id}, {"$push": {"away_cards": card.model_dump()}})
+    
+    if card_data.card_type == "yellow":
+        await db.players.update_one({"id": card_data.player_id}, {"$inc": {"yellow_cards": 1}})
+    else:
+        await db.players.update_one({"id": card_data.player_id}, {"$inc": {"red_cards": 1}})
+    
+    return {"message": "Card added successfully"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
