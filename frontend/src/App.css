@@ -176,3 +176,40 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(90deg, #ffd700 0%, #f4c542 100%);
   box-shadow: 0 0 10px rgba(244, 197, 66, 0.5);
 }
+
+/* Fix dropdown/select text visibility */
+[role="option"],
+[data-radix-collection-item] {
+  color: #e5e5e5 !important;
+}
+
+/* Select component styling */
+button[role="combobox"],
+[data-radix-select-trigger] {
+  color: #e5e5e5 !important;
+}
+
+/* Select content/dropdown styling */
+[data-radix-select-content],
+[data-radix-select-viewport] {
+  background-color: #1a1a1b !important;
+  border: 1px solid rgba(244, 197, 66, 0.2) !important;
+}
+
+/* Select items text color */
+[data-radix-select-item] {
+  color: #e5e5e5 !important;
+  cursor: pointer;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted] {
+  background-color: rgba(244, 197, 66, 0.2) !important;
+  color: #f4c542 !important;
+}
+
+/* Selected item */
+[data-radix-select-item][data-state="checked"] {
+  background-color: rgba(244, 197, 66, 0.3) !important;
+  color: #f4c542 !important;
+}
