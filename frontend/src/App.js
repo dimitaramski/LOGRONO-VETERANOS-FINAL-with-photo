@@ -104,6 +104,7 @@ function App() {
           <Route path="/standings" element={<StandingsPage />} />
           <Route path="/top-scorers" element={<TopScorersPage />} />
           <Route path="/copa" element={<CopaPage />} />
+          <Route path="/sanctions" element={<SanctionsPage />} />
         </Routes>
       </BrowserRouter>
       <Toaster />
