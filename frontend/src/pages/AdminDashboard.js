@@ -466,10 +466,18 @@ const AdminDashboard = ({ user, setUser }) => {
       </div>
 
       {/* Add Team Modal */}
-      <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
+      <Dialog open={showTeamModal} onOpenChange={(open) => {
+        setShowTeamModal(open);
+        if (!open) {
+          setEditingTeam(null);
+          setTeamForm({ name: "", division: 1, logo_url: "" });
+        }
+      }}>
         <DialogContent className="bg-[#1a1a1b] border border-[#f4c542]/20">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-[#f4c542]">Add New Team</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-[#f4c542]">
+              {editingTeam ? "Edit Team" : "Add New Team"}
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateTeam} className="space-y-4">
             <div>
