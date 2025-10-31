@@ -79,6 +79,8 @@ class Player(BaseModel):
     team_id: str
     jersey_number: Optional[int] = None
     goals_scored: int = 0
+    yellow_cards: int = 0
+    red_cards: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class PlayerCreate(BaseModel):
@@ -87,8 +89,16 @@ class PlayerCreate(BaseModel):
     jersey_number: Optional[int] = None
 
 class GoalScorer(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     player_id: str
     player_name: str
+    minute: Optional[int] = None
+
+class Card(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    player_id: str
+    player_name: str
+    card_type: str  # yellow or red
     minute: Optional[int] = None
 
 class Fixture(BaseModel):
