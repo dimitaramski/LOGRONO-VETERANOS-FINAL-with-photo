@@ -14,8 +14,10 @@ import {
 import { api } from "../App";
 import { toast } from "sonner";
 import SharedNavigation from "../components/SharedNavigation";
+import { useTranslation } from "react-i18next";
 
 const FixturesPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [division, setDivision] = useState(1);
   const [selectedWeek, setSelectedWeek] = useState("all");
