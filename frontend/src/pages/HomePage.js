@@ -324,10 +324,10 @@ const HomePage = () => {
         <section className="py-20 px-6">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-4xl sm:text-5xl font-bold text-center mb-4">
-              <span className="text-gradient">Highlights & Stories</span>
+              <span className="text-gradient">{t('highlightsStories')}</span>
             </h2>
             <p className="text-center text-[#b5b5b5] mb-12 max-w-2xl mx-auto">
-              Relive the best moments, player interviews, and behind-the-scenes content from Liga Veteranos
+              {t('highlightsDesc')}
             </p>
             
             {/* Horizontal scroll carousel for all screen sizes */}
@@ -360,7 +360,7 @@ const HomePage = () => {
             
             {/* Scroll hint for users */}
             <div className="text-center mt-4">
-              <p className="text-[#b5b5b5] text-sm">← Scroll to see more →</p>
+              <p className="text-[#b5b5b5] text-sm">{t('scrollMore')}</p>
             </div>
           </div>
         </section>
