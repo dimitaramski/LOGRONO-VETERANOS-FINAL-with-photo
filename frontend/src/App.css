@@ -147,3 +147,32 @@ h1, h2, h3, h4, h5, h6 {
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
   background: rgba(244, 197, 66, 0.7);
 }
+
+/* Custom scrollbar for Instagram carousel */
+.scrollbar-custom {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 197, 66, 0.6) rgba(26, 26, 27, 0.4);
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+  height: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: rgba(26, 26, 27, 0.6);
+  border-radius: 5px;
+  margin: 0 20px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #f4c542 0%, #ffd700 100%);
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #ffd700 0%, #f4c542 100%);
+  box-shadow: 0 0 10px rgba(244, 197, 66, 0.5);
+}
