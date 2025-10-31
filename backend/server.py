@@ -797,6 +797,7 @@ async def get_top_scorers(division: Optional[int] = None):
                 player_name=player['name'],
                 team_id=player['team_id'],
                 team_name=team['name'] if team else "Unknown",
+                division=team['division'] if team else 1,
                 goals=player['goals_scored']
             ))
     
