@@ -161,6 +161,109 @@ const AdminDashboard = ({ user, setUser }) => {
     }
   };
 
+  // Copa handlers
+  const handleCreateCopaGroup = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/copa/groups", copaGroupForm);
+      toast.success("Copa group created successfully");
+      setShowCopaGroupModal(false);
+      setCopaGroupForm({ group_name: "A", team_ids: [] });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create Copa group");
+    }
+  };
+
+  const handleUpdateCopaGroup = async (groupName) => {
+    try {
+      await api.put(`/copa/groups/${groupName}`, copaGroupForm);
+      toast.success("Copa group updated successfully");
+      setShowCopaGroupModal(false);
+      setCopaGroupForm({ group_name: "A", team_ids: [] });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to update Copa group");
+    }
+  };
+
+  const handleDeleteCopaGroup = async (groupName) => {
+    if (!window.confirm(`Are you sure you want to delete Group ${groupName}?`)) {
+      return;
+    }
+    try {
+      await api.delete(`/copa/groups/${groupName}`);
+      toast.success("Copa group deleted successfully");
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete Copa group");
+    }
+  };
+
+  const handleCreateCopaFixture = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/copa/fixtures", copaFixtureForm);
+      toast.success("Copa fixture created successfully");
+      setShowCopaFixtureModal(false);
+      setCopaFixtureForm({
+        group_name: "A",
+        jornada: 1,
+        home_team_id: "",
+        away_team_id: "",
+        match_date: "",
+      });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create Copa fixture");
+    }
+  };
+
+  const handleDeleteCopaFixture = async (fixtureId) => {
+    if (!window.confirm("Are you sure you want to delete this Copa fixture?")) {
+      return;
+    }
+    try {
+      await api.delete(`/copa/fixtures/${fixtureId}`);
+      toast.success("Copa fixture deleted successfully");
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete Copa fixture");
+    }
+  };
+
+  const handleCreateCopaBracket = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/copa/brackets", copaBracketForm);
+      toast.success("Copa bracket created successfully");
+      setShowCopaBracketModal(false);
+      setCopaBracketForm({
+        round_type: "round_of_16",
+        match_position: 1,
+        home_team_id: "",
+        away_team_id: "",
+        match_date: "",
+      });
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to create Copa bracket");
+    }
+  };
+
+  const handleDeleteCopaBracket = async (bracketId) => {
+    if (!window.confirm("Are you sure you want to delete this Copa bracket?")) {
+      return;
+    }
+    try {
+      await api.delete(`/copa/brackets/${bracketId}`);
+      toast.success("Copa bracket deleted successfully");
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete Copa bracket");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser(null);
