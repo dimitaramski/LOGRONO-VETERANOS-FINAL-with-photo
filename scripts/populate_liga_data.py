@@ -7,7 +7,7 @@ import uuid
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(MONGO_URL)
-db = client['football_league']
+db = client[os.environ.get('DB_NAME', 'test_database')]
 
 # Division 1 Teams with standing data
 division_1_teams = [
