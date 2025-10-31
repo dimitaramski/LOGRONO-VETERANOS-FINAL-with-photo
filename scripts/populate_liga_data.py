@@ -238,18 +238,18 @@ async def populate_database():
         fixture = {
             "id": fixture_id,
             "division": 1,
-            "week": fixture_data["week"],
+            "week_number": fixture_data["week"],
             "home_team_id": home_team_id,
             "away_team_id": away_team_id,
             "home_score": fixture_data.get("home_score"),
             "away_score": fixture_data.get("away_score"),
-            "match_date": datetime.strptime(fixture_data["date"], "%Y-%m-%d"),
+            "match_date": datetime.strptime(fixture_data["date"], "%Y-%m-%d").isoformat(),
             "status": "completed" if fixture_data.get("home_score") is not None else "scheduled",
             "home_scorers": [],
             "away_scorers": [],
             "home_cards": [],
             "away_cards": [],
-            "updated_at": datetime.now()
+            "updated_at": datetime.now().isoformat()
         }
         await db.fixtures.insert_one(fixture)
         status_emoji = "✅" if fixture["status"] == "completed" else "📅"
