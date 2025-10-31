@@ -246,12 +246,21 @@ const TeamDashboard = ({ user, setUser }) => {
                           >
                             Add Goal Scorer
                           </Button>
+                          <Button
+                            size="sm"
+                            className="btn-secondary"
+                            onClick={() => handleOpenCardModal(fixture)}
+                            data-testid={`add-card-btn-${fixture.id}`}
+                          >
+                            Add Card
+                          </Button>
                         </div>
 
-                        {/* Display goal scorers */}
-                        {(fixture.home_scorers.length > 0 || fixture.away_scorers.length > 0) && (
+                        {/* Display goal scorers and cards */}
+                        {(fixture.home_scorers?.length > 0 || fixture.away_scorers?.length > 0 || 
+                          fixture.home_cards?.length > 0 || fixture.away_cards?.length > 0) && (
                           <div className="mt-4 pt-4 border-t border-[#f4c542]/10">
-                            {fixture.home_scorers.length > 0 && (
+                            {fixture.home_scorers?.length > 0 && (
                               <div className="mb-2" data-testid={`home-scorers-${fixture.id}`}>
                                 <p className="text-sm text-[#b5b5b5] mb-1">
                                   {teams[fixture.home_team_id]?.name} scorers:
