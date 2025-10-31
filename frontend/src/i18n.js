@@ -278,7 +278,7 @@ const resources = {
       'welcomeTo': 'Welcome to',
       'ligaVeteranos': 'Liga Veteranos',
       'heroText': 'Experience the passion of veteran football in Logroño. Two divisions, 24 teams, one community united by the love of the game.',
-      'subscribeFor': 'Subscribe for €5/Season',
+      'subscribeFor': 'Subscribe for €50/Team/Season',
       'viewStandings': 'View Standings',
       
       // Features
