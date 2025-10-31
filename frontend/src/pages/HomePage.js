@@ -483,10 +483,10 @@ const HomePage = () => {
               />
             </div>
             <div className="p-4 bg-[#f4c542]/10 rounded-lg">
-              <p className="text-[#e5e5e5] mb-2">Season 2024-2025</p>
-              <p className="text-2xl font-bold text-[#f4c542]">€5.00</p>
+              <p className="text-[#e5e5e5] mb-2">{t('season')} 2024-2025</p>
+              <p className="text-2xl font-bold text-[#f4c542]">€50.00</p>
               <p className="text-sm text-[#b5b5b5] mt-1">
-                Full access to fixtures, standings, and statistics for the entire season
+                {t('subscriptionDesc', 'Full access to fixtures, standings, and statistics for the entire season')} - {t('perTeam', 'Per Team/Season')}
               </p>
             </div>
             <Button
