@@ -292,6 +292,30 @@ class CopaStandingsRow(BaseModel):
     goal_difference: int
     points: int
 
+# Sanction Models
+class Sanction(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    player_id: str
+    player_name: str
+    team_id: str
+    team_name: str
+    card_type: str  # yellow or red
+    total_yellow_cards: int = 0
+    total_red_cards: int = 0
+    suspension_games: Optional[int] = None  # Number of games suspended (for red cards)
+    suspension_from_week: Optional[int] = None  # Starting week of suspension
+    suspension_to_week: Optional[int] = None  # Ending week of suspension
+    notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SanctionUpdate(BaseModel):
+    suspension_games: Optional[int] = None
+    suspension_from_week: Optional[int] = None
+    suspension_to_week: Optional[int] = None
+    notes: Optional[str] = None
+
 # ============= Helper Functions =============
 
 def verify_password(plain_password, hashed_password):
