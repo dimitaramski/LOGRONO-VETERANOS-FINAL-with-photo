@@ -23,9 +23,11 @@ const TeamDashboard = ({ user, setUser }) => {
   const [loading, setLoading] = useState(false);
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
+  const [showCardModal, setShowCardModal] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState(null);
   const [scoreForm, setScoreForm] = useState({ home_score: "", away_score: "", status: "completed" });
   const [goalForm, setGoalForm] = useState({ player_id: "", team_side: "", minute: "" });
+  const [cardForm, setCardForm] = useState({ player_id: "", team_side: "", card_type: "yellow", minute: "" });
 
   useEffect(() => {
     fetchData();
