@@ -541,6 +541,7 @@ const CopaPage = () => {
             </div>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   );
