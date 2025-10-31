@@ -130,44 +130,7 @@ const FixturesPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f10] to-[#1a1a1b]">
-      {/* Navigation */}
-      <nav className="navbar fixed w-full top-0 z-50 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1
-            className="text-2xl font-bold text-gradient cursor-pointer"
-            onClick={() => navigate("/")}
-            data-testid="logo-home-link"
-          >
-            Liga Veteranos Logroño
-          </h1>
-          <div className="flex gap-4">
-            <Button
-              variant="ghost"
-              className="text-[#f4c542] hover:text-[#ffd700]"
-              onClick={() => navigate("/fixtures")}
-              data-testid="nav-fixtures-btn"
-            >
-              Fixtures
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-[#e5e5e5] hover:text-[#f4c542]"
-              onClick={() => navigate("/standings")}
-              data-testid="nav-standings-btn"
-            >
-              Standings
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-[#e5e5e5] hover:text-[#f4c542]"
-              onClick={() => navigate("/top-scorers")}
-              data-testid="nav-top-scorers-btn"
-            >
-              Top Scorers
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <SharedNavigation currentPage="fixtures" />
 
       {/* Content */}
       <div className="pt-32 pb-20 px-6">
